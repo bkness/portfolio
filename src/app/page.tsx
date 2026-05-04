@@ -1,5 +1,6 @@
 import Terminal from '@/components/Terminal';
 import Projects from '@/components/Projects';
+import Skills from '@/components/Skills';
 
 export default function Home() {
   return (
@@ -14,6 +15,12 @@ export default function Home() {
 
       <div className="flex justify-center w-full">
         <Projects />
+      </div>
+
+      <div className="border-t border-[#1a3a22]/50" />
+
+      <div className="flex justify-center w-full">
+        <Skills />
       </div>
     </main>
   );
