@@ -112,6 +112,7 @@ export default function Terminal() {
   const [input, setInput] = useState('');
   const [booted, setBooted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const runBootSequence = useCallback(() => {
@@ -190,9 +191,11 @@ export default function Terminal() {
     return () => { cancelled = true; };
   }, [runBootSequence]);
 
-  // Auto scroll
+  // Auto scroll within terminal only
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [output]);
 
   const handleCommand = (cmd: string) => {
@@ -301,7 +304,7 @@ export default function Terminal() {
         onClick={() => inputRef.current?.focus()}
       >
         {titleBar()}
-        <div className="p-6 min-h-[360px] max-h-[500px] overflow-y-auto bg-[#020a04]/90 text-sm leading-6">
+        <div ref={scrollRef} className="p-6 min-h-[360px] max-h-[500px] overflow-y-auto bg-[#020a04]/90 text-sm leading-6">
           {output.map((line, i) => (
             <div
               key={i}
