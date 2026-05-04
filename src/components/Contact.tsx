@@ -206,7 +206,7 @@ export default function Contact() {
                 line.startsWith('  ✓') ? 'text-[#00ff41]' :
                 line.startsWith('  ✗') ? 'text-[#ff4500]' :
                 line.startsWith('  ') ? 'text-[#c8ffd4]' :
-                line === '' ? ' ' && <br /> as unknown as string :
+                line === '' ? '' :
                 'text-[#4a7a55]'
               }>
                 {line || ' '}
