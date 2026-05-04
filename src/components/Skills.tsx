@@ -120,9 +120,9 @@ function Graph({ animate }: { animate: boolean }) {
   const rowLabels = ['100', ' 90', ' 80', ' 70', ' 60', ' 50', ' 40', ' 30', ' 20', ' 10'];
 
   return (
-    <div className="font-mono text-xs select-none">
+    <div className="font-mono text-xs select-none overflow-x-auto">
       <div className="text-[#4a7a55] mb-1">── sys.health ─────────────────</div>
-      <div className="flex">
+      <div className="flex" style={{ minWidth: 'max-content' }}>
         <div className="flex flex-col mr-1">
           {rowLabels.map((l, i) => (
             <div key={i} className="text-[#1a3a22] leading-5">{l}│</div>
@@ -242,7 +242,7 @@ export default function Skills() {
         <h2 className="text-[#00ff41] font-mono text-2xl font-bold">Tech Stack</h2>
       </div>
 
-      <div className="border border-[#1a3a22] rounded-lg bg-[#020a04]/80 p-6">
+      <div className="border border-[#1a3a22] rounded-lg bg-[#020a04]/80 p-6 overflow-hidden">
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Skill bars */}
