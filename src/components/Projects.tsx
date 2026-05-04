@@ -65,6 +65,26 @@ export default function Projects() {
 
   return (
     <section className="px-4 py-20 max-w-5xl mx-auto w-full">
+      <style>{`
+        .projects-wrap {
+          overflow: hidden;
+          transition: max-height 0.5s ease, mask-image 0.3s ease;
+          max-height: 2000px;
+        }
+        .projects-wrap.collapsed {
+          max-height: 420px;
+          mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+        }
+        @media (max-width: 767px) {
+          .projects-wrap.collapsed {
+            max-height: 540px;
+            mask-image: linear-gradient(to bottom, #000 28%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, #000 28%, transparent 100%);
+          }
+        }
+      `}</style>
+
       <div className="mb-12">
         <p className="text-[#4a7a55] text-sm font-mono mb-2">❯ projects --featured</p>
         <h2 className="text-[#00ff41] font-mono text-2xl font-bold">Featured Work</h2>
@@ -73,16 +93,8 @@ export default function Projects() {
         </p>
       </div>
 
-      <div
-        className="relative transition-all duration-500"
-        style={{
-          maxHeight: expanded ? '2000px' : '420px',
-          overflow: 'hidden',
-          maskImage: expanded ? 'none' : 'linear-gradient(to bottom, #000 40%, transparent 100%)',
-          WebkitMaskImage: expanded ? 'none' : 'linear-gradient(to bottom, #000 40%, transparent 100%)',
-        }}
-      >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={`projects-wrap${expanded ? '' : ' collapsed'}`}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
         {PROJECTS.map((p) => (
           <div
             key={p.number}

@@ -28,10 +28,10 @@ const FAKE_CMDS: FakeCmd[] = [
 const COMMANDS: Record<string, () => string[]> = {
   whoami: () => [
     "Brandon Kelly — Full Stack Developer",
-    "Based in the US · Available for remote work",
+    "Cottonwood, AZ · Available for remote work",
     "",
     "I build CLIs, web apps, and mobile tools.",
-    "1.3k+ npm downloads · Published open-source tooling · React Native · Node.js",
+    "1.3k+ npm downloads · Open-source tooling · React Native · Node.js",
   ],
   'skills --list': () => [
     "── Languages ──────────────────────",
@@ -64,7 +64,8 @@ const COMMANDS: Record<string, () => string[]> = {
     "  [4] breweries           Node · SQLite · Sequelize",
     "       Brewery finder — migrated from MySQL/Heroku",
     "",
-    "  type  open <number>  to view a project",
+    "  open <number>  to spin up a project",
+    "  run  npm fund  to support the developer",
   ],
   'contact --hire': () => [
     "── Let's work together ─────────────",
@@ -83,8 +84,11 @@ const COMMANDS: Record<string, () => string[]> = {
     "  whoami               Who is this guy?",
     "  skills --list        Full tech stack",
     "  projects --featured  Featured work",
+    "  open <1-4>           Spin up a project",
     "  contact --hire       Get in touch",
     "  clear                Clear terminal",
+    "  doom scroll          ...",
+    "  slack off            ...",
   ],
   clear: () => [],
 };
@@ -104,13 +108,14 @@ const shimmerStyle: React.CSSProperties = {
   borderRadius: '4px',
 };
 
-export default function Terminal() {
+export default function Terminal({ onOpenProject }: { onOpenProject?: (id: number) => void }) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [introLines, setIntroLines] = useState<{ type: 'cmd' | 'out'; text: string }[]>([]);
   const [currentTyping, setCurrentTyping] = useState('');
   const [output, setOutput] = useState<OutputLine[]>([]);
   const [input, setInput] = useState('');
   const [booted, setBooted] = useState(false);
+  const [fundPromptActive, setFundPromptActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -198,12 +203,167 @@ export default function Terminal() {
     }
   }, [output]);
 
+  const PROJECT_NAMES: Record<number, string> = {
+    1: 'forged-cli',
+    2: 'game-hub',
+    3: 'nightowlz',
+    4: 'breweries',
+  };
+
   const handleCommand = (cmd: string) => {
     const trimmed = cmd.trim().toLowerCase();
     setOutput(prev => [...prev, { type: 'input', content: `❯ ${cmd}` }]);
 
+    // npm fund y/n prompt
+    if (fundPromptActive) {
+      setFundPromptActive(false);
+      if (trimmed === 'y') {
+        setOutput(prev => [...prev,
+          { type: 'system', content: '  opening wallet.exe...' },
+          { type: 'output', content: '  ✓  redirecting to payment processor' },
+          { type: 'system', content: '' },
+        ]);
+        setTimeout(() => window.open('https://cash.app/$bkness928', '_blank'), 600);
+        return;
+      }
+      if (trimmed === 'n') {
+        setOutput(prev => [...prev,
+          { type: 'system', content: '  your loss. just saying.' },
+          { type: 'output', content: "  (psst — try  aol  if you haven't yet)" },
+          { type: 'system', content: '' },
+        ]);
+        return;
+      }
+      setOutput(prev => [...prev,
+        { type: 'error', content: `  expected y or n, got: ${trimmed}` },
+        { type: 'system', content: '' },
+      ]);
+      return;
+    }
+
     if (trimmed === 'clear') {
       runBootSequence();
+      return;
+    }
+
+    const openMatch = trimmed.match(/^open\s+(\d+)$/);
+    if (openMatch) {
+      const n = parseInt(openMatch[1]);
+      const name = PROJECT_NAMES[n];
+      if (!name) {
+        setOutput(prev => [
+          ...prev,
+          { type: 'error',  content: `open: no project [${n}] — valid range: 1-4` },
+          { type: 'system', content: 'run  projects --featured  to see the list.' },
+          { type: 'system', content: '' },
+        ]);
+        return;
+      }
+      setBooted(false);
+      const ms = 640 + Math.floor(Math.random() * 360);
+      setOutput(prev => [
+        ...prev,
+        { type: 'system', content: `  [${name}] spinning up dev server...` },
+      ]);
+      setTimeout(() => {
+        setOutput(prev => [
+          ...prev,
+          { type: 'output', content: `  ▶  Local:   http://localhost:3000` },
+        ]);
+      }, 800);
+      setTimeout(() => {
+        setOutput(prev => [
+          ...prev,
+          { type: 'output', content: `  ✓  compiled in ${ms}ms` },
+          { type: 'system', content: '' },
+        ]);
+        setBooted(true);
+        onOpenProject?.(n);
+      }, 1700);
+      return;
+    }
+
+    if (trimmed === 'doom scroll') {
+      setBooted(false);
+      setOutput(prev => [...prev,
+        { type: 'system', content: '  warning: may cause loss of productivity' },
+      ]);
+      setTimeout(() => {
+        setOutput(prev => [...prev,
+          { type: 'system', content: '  opening social media...' },
+        ]);
+      }, 600);
+      setTimeout(() => {
+        setOutput(prev => [...prev,
+          { type: 'output', content: '  ✓ dopamine module loaded' },
+          { type: 'system', content: '' },
+        ]);
+        setBooted(true);
+        onOpenProject?.(-1);
+      }, 1300);
+      return;
+    }
+
+    if (trimmed === 'slack off') {
+      setBooted(false);
+      setOutput(prev => [...prev,
+        { type: 'system', content: '  warning: productivity levels critical...' },
+      ]);
+      setTimeout(() => {
+        setOutput(prev => [...prev,
+          { type: 'system', content: '  loading asteroids.exe...' },
+        ]);
+      }, 600);
+      setTimeout(() => {
+        setOutput(prev => [...prev,
+          { type: 'output', content: '  ✓ distraction module initialized' },
+          { type: 'system', content: '' },
+        ]);
+        setBooted(true);
+        onOpenProject?.(0);
+      }, 1300);
+      return;
+    }
+
+    if (trimmed === 'npm fund') {
+      setOutput(prev => [...prev,
+        { type: 'system', content: '' },
+        { type: 'system', content: '  npm notice funding' },
+        { type: 'system', content: '  ──────────────────────────────────────' },
+        { type: 'system', content: '' },
+        { type: 'output', content: '    forged-cli — 1,312 downloads and counting' },
+        { type: 'output', content: '    fund the developer: bkness' },
+        { type: 'system', content: '' },
+        { type: 'system', content: '  ──────────────────────────────────────' },
+        { type: 'system', content: '' },
+        { type: 'output', content: '  Are you sure you want to fund this' },
+        { type: 'output', content: '  type of behavior?' },
+        { type: 'system', content: '' },
+        { type: 'system', content: '  [y] yes, open wallet    [n] no thanks' },
+        { type: 'system', content: '' },
+      ]);
+      setFundPromptActive(true);
+      return;
+    }
+
+    if (trimmed === 'aol') {
+      setBooted(false);
+      setOutput(prev => [...prev,
+        { type: 'system', content: '  loading aol 9.0...' },
+      ]);
+      setTimeout(() => {
+        setOutput(prev => [...prev,
+          { type: 'system', content: '  dialing 1-800-827-6364...' },
+        ]);
+      }, 500);
+      setTimeout(() => {
+        setOutput(prev => [...prev,
+          { type: 'output', content: '  CONNECT 28800' },
+          { type: 'system', content: '' },
+        ]);
+        setBooted(true);
+        onOpenProject?.(-2);
+      }, 1200);
       return;
     }
 
