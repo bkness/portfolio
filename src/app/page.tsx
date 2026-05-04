@@ -1,4 +1,5 @@
 import Terminal from '@/components/Terminal';
+import Projects from '@/components/Projects';
 
 export default function Home() {
   return (
@@ -8,6 +9,12 @@ export default function Home() {
           <Terminal />
         </div>
       </section>
+
+      <div className="border-t border-[#1a3a22]/50" />
+
+      <div className="flex justify-center w-full">
+        <Projects />
+      </div>
     </main>
   );
 }
