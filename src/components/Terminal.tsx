@@ -367,7 +367,14 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
       return;
     }
 
-    const handler = COMMANDS[trimmed];
+    // aliases so short-form commands work too
+    const aliases: Record<string, string> = {
+      skills: 'skills --list',
+      projects: 'projects --featured',
+      contact: 'contact --hire',
+    };
+
+    const handler = COMMANDS[aliases[trimmed] ?? trimmed];
     if (handler) {
       const lines = handler();
       setOutput(prev => [

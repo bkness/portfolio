@@ -335,17 +335,18 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
         }
       `}</style>
       <div
-        className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:p-8 pb-6"
+        className="fixed inset-0 z-50 flex items-end justify-center p-2 sm:p-8 sm:pb-6"
         style={{ background: 'rgba(0,5,0,0.75)', backdropFilter: 'blur(6px)' }}
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div
           className="w-full max-w-5xl rounded-xl overflow-hidden border border-[#2a2a2a] shadow-[0_0_80px_rgba(0,255,65,0.07)]"
-          style={{ height: '76vh', animation: 'browserIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards' }}
+          style={{ height: '88vh', maxHeight: '88vh', animation: 'browserIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards' }}
         >
           {/* ── Chrome ── */}
           <div className="bg-[#1c1c1c] border-b border-[#2a2a2a] select-none">
-            <div className="flex items-end gap-0 px-3 pt-2">
+            {/* Tab bar — hidden on mobile */}
+            <div className="hidden sm:flex items-end gap-0 px-3 pt-2">
               <div className="flex gap-1.5 items-center mr-3 pb-2">
                 <button onClick={onClose}
                   className="w-3 h-3 rounded-full bg-[#ff5f57] hover:brightness-110 transition-all flex items-center justify-center group"
@@ -361,30 +362,39 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-2 bg-[#181818]">
-              <div className="flex gap-0.5 text-gray-600 text-xs">
+            {/* Address bar */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-[#181818]">
+              {/* Traffic lights on mobile (replace tab bar) */}
+              <div className="flex sm:hidden gap-1.5 items-center">
+                <button onClick={onClose} className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+                <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+              </div>
+
+              {/* Nav buttons — desktop only */}
+              <div className="hidden sm:flex gap-0.5 text-gray-600 text-xs">
                 <button className="px-1.5 py-1 rounded hover:bg-[#2a2a2a] hover:text-gray-400 transition-colors">←</button>
                 <button className="px-1.5 py-1 rounded hover:bg-[#2a2a2a] hover:text-gray-400 transition-colors">→</button>
                 <button className="px-1.5 py-1 rounded hover:bg-[#2a2a2a] hover:text-gray-400 transition-colors text-sm">↺</button>
               </div>
 
-              <div className="flex-1 bg-[#252525] rounded-md px-3 py-1.5 text-xs font-mono text-gray-400 border border-[#333] flex items-center gap-2">
-                <span className={`text-[10px] ${isGame ? 'text-yellow-500' : isDoom ? 'text-pink-500' : isAol ? 'text-blue-400' : 'text-green-500'}`}>
+              <div className="flex-1 bg-[#252525] rounded-md px-2 py-1.5 text-xs font-mono text-gray-400 border border-[#333] flex items-center gap-2 min-w-0">
+                <span className={`text-[10px] shrink-0 ${isGame ? 'text-yellow-500' : isDoom ? 'text-pink-500' : isAol ? 'text-blue-400' : 'text-green-500'}`}>
                   {isGame ? '🎮' : isDoom ? '📱' : isAol ? '📬' : '🔒'}
                 </span>
-                <span>{displayUrl}</span>
+                <span className="truncate">{displayUrl}</span>
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 shrink-0">
                 {!isSpecial && project?.liveUrl && (
                   <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-[10px] text-[#4a7a55] hover:text-[#00ff41] font-mono px-2.5 py-1 border border-[#2a3a2a] rounded-md hover:border-[#00ff41]/40 transition-colors whitespace-nowrap">
+                    className="hidden sm:block text-[10px] text-[#4a7a55] hover:text-[#00ff41] font-mono px-2.5 py-1 border border-[#2a3a2a] rounded-md hover:border-[#00ff41]/40 transition-colors whitespace-nowrap">
                     open live ↗
                   </a>
                 )}
                 {!isSpecial && (
                   <a href={project!.github} target="_blank" rel="noopener noreferrer"
-                    className="text-[10px] text-gray-500 hover:text-gray-300 font-mono px-2.5 py-1 border border-[#2a2a2a] rounded-md hover:border-[#444] transition-colors">
+                    className="hidden sm:block text-[10px] text-gray-500 hover:text-gray-300 font-mono px-2.5 py-1 border border-[#2a2a2a] rounded-md hover:border-[#444] transition-colors">
                     github ↗
                   </a>
                 )}
@@ -397,7 +407,7 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
           </div>
 
           {/* ── Content ── */}
-          <div className={isGame ? 'overflow-hidden' : 'overflow-auto'} style={{ height: 'calc(76vh - 88px)' }}>
+          <div className={isGame ? 'overflow-hidden' : 'overflow-auto'} style={{ height: 'calc(88vh - 52px)' }}>
             {!loaded ? (
               <div className="h-full flex items-center justify-center bg-[#010a04]">
                 <div className="flex items-center gap-3 font-mono text-sm text-[#4a7a55]">

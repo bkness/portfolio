@@ -372,7 +372,7 @@ export default function Asteroids() {
         ref={canvasRef}
         width={CW}
         height={CH}
-        style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }}
+        style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
       />
     </div>
   );
