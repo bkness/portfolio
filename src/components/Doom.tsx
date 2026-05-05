@@ -31,7 +31,7 @@ export default function Doom() {
 
   const initGame = () => {
     if (!window.Dos || !containerRef.current) return;
-    window.Dos(containerRef.current).run('/doom.jsdos');
+    window.Dos(containerRef.current).run('https://cdn.dos.zone/custom/dos/doom.jsdos');
     setStarted(true);
   };
 
