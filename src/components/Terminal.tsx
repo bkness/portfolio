@@ -119,6 +119,7 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const skipIntroRef = useRef(false);
 
   const runBootSequence = useCallback(() => {
     setOutput([]);
@@ -136,58 +137,61 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
     }, 120);
   }, []);
 
+  const skipIntro = useCallback(() => {
+    skipIntroRef.current = true;
+    setPhase('live');
+    runBootSequence();
+  }, [runBootSequence]);
+
   // Intro → shimmer → live sequence
   useEffect(() => {
     let cancelled = false;
+    const bail = () => cancelled || skipIntroRef.current;
     const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
     const run = async () => {
       for (const { cmd, out, typo } of FAKE_CMDS) {
-        // type up to typo point, then type the wrong chars
         if (typo) {
           for (let i = 1; i <= typo.at + typo.extra.length; i++) {
-            if (cancelled) return;
+            if (bail()) return;
             const base = cmd.slice(0, Math.min(i, typo.at));
             const wrong = i > typo.at ? typo.extra.slice(0, i - typo.at) : '';
             setCurrentTyping(base + wrong);
             await delay(70);
           }
-          // pause — "wait a sec..."
           await delay(600);
-          // backspace the typo
           const wrongLen = typo.extra.length;
           for (let i = wrongLen; i >= 0; i--) {
-            if (cancelled) return;
+            if (bail()) return;
             setCurrentTyping(cmd.slice(0, typo.at) + typo.extra.slice(0, i));
             await delay(55);
           }
-          // continue typing the rest correctly
           for (let i = typo.at + 1; i <= cmd.length; i++) {
-            if (cancelled) return;
+            if (bail()) return;
             setCurrentTyping(cmd.slice(0, i));
             await delay(70);
           }
         } else {
           for (let i = 1; i <= cmd.length; i++) {
-            if (cancelled) return;
+            if (bail()) return;
             setCurrentTyping(cmd.slice(0, i));
             await delay(70);
           }
         }
-        if (cancelled) return;
+        if (bail()) return;
         setIntroLines(prev => [...prev, { type: 'cmd', text: cmd }]);
         setCurrentTyping('');
         await delay(250);
         if (out) {
-          if (cancelled) return;
+          if (bail()) return;
           setIntroLines(prev => [...prev, { type: 'out', text: out }]);
           await delay(320);
         }
       }
-      if (cancelled) return;
+      if (bail()) return;
       setPhase('shimmer');
       await delay(750);
-      if (cancelled) return;
+      if (bail()) return;
       setPhase('live');
       runBootSequence();
     };
@@ -442,7 +446,7 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
   // Phase 1 — fake typing intro
   if (phase === 'intro') {
     return (
-      <div className="border border-[#00ff41]/30 rounded-lg overflow-hidden">
+      <div className="border border-[#00ff41]/30 rounded-lg overflow-hidden cursor-pointer" onClick={skipIntro} title="click to skip">
         {titleBar()}
         <div className="p-6 min-h-[360px] bg-[#020a04]/90 text-sm leading-6">
           {introLines.map((line, i) => (
@@ -465,7 +469,7 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
   // Phase 2 — shimmer skeleton
   if (phase === 'shimmer') {
     return (
-      <div className="border border-[#00ff41]/10 rounded-lg overflow-hidden">
+      <div className="border border-[#00ff41]/10 rounded-lg overflow-hidden cursor-pointer" onClick={skipIntro}>
         {titleBar(true)}
         <div className="p-6 min-h-[360px] bg-[#020a04]/60 space-y-4">
           <div className="h-3 w-3/4" style={shimmerStyle} />

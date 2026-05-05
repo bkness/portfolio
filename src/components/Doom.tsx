@@ -3,23 +3,54 @@
 import Script from 'next/script';
 import { useRef, useState } from 'react';
 
-declare global {
-  interface Window {
-    Dos: (element: HTMLElement, options?: Record<string, unknown>) => {
-      run: (bundleUrl: string) => Promise<unknown>;
-    };
-  }
-}
-
 export default function Doom() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const dosRef       = useRef<Window['Dos'] | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dosRef       = useRef<((el: HTMLElement, opts: Record<string, unknown>) => unknown) | null>(null);
   const skipOverlay  = useRef(false);
   const [loaded, setLoaded]   = useState(false);
   const [started, setStarted] = useState(false);
   const [loadMsg, setLoadMsg] = useState('loading doom engine...');
   const held     = useRef(new Set<string>());
   const stickOrigin = useRef<{ cx: number; cy: number } | null>(null);
+
+  const initGame = () => {
+    if (!dosRef.current || !containerRef.current) {
+      console.error('[Doom] initGame guard failed', { dos: dosRef.current, container: containerRef.current });
+      return;
+    }
+    try {
+      dosRef.current(containerRef.current, {
+        url: '/doom.jsdos',
+        pathPrefix: `${window.location.origin}/emulators/`,
+        kiosk: true,
+      });
+      setStarted(true);
+    } catch (err) {
+      console.error('[Doom] run failed', err);
+    }
+  };
+
+  const handleScriptLoad = () => {
+    setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const D = (window as any).Dos;
+      console.log('[Doom] window.Dos after load:', typeof D);
+      if (typeof D === 'function') {
+        dosRef.current = D;
+        skipOverlay.current ? initGame() : setLoaded(true);
+      } else {
+        console.error('[Doom] window.Dos not found');
+        setLoadMsg('failed to load doom engine — try refreshing');
+      }
+    }, 50);
+  };
+
+  const handleImpatientClick = () => {
+    if (skipOverlay.current) return;
+    skipOverlay.current = true;
+    // just pulse the text — no message, game will auto-start when ready
+  };
 
   const press = (key: string) => {
     if (held.current.has(key)) return;
@@ -32,38 +63,6 @@ export default function Doom() {
     document.dispatchEvent(new KeyboardEvent('keyup', { key, keyCode: keyCode(key), bubbles: true }));
   };
 
-  const initGame = () => {
-    if (!dosRef.current || !containerRef.current) {
-      console.error('[Doom] initGame guard failed', { dos: dosRef.current, container: containerRef.current });
-      return;
-    }
-    try {
-      dosRef.current(containerRef.current).run('https://cdn.dos.zone/custom/dos/doom.jsdos');
-      setStarted(true);
-    } catch (err) {
-      console.error('[Doom] run failed', err);
-    }
-  };
-
-  const handleScriptLoad = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const D = (window as any).Dos as Window['Dos'] | undefined;
-    if (D) {
-      dosRef.current = D;
-      skipOverlay.current ? initGame() : setLoaded(true);
-    } else {
-      console.error('[Doom] js-dos loaded but window.Dos is not set');
-      setLoadMsg('failed to load doom engine — try refreshing');
-    }
-  };
-
-  const handleImpatientClick = () => {
-    if (skipOverlay.current) return;
-    skipOverlay.current = true;
-    setLoadMsg("fine. don't acknowledge the work put into this.");
-  };
-
-  // Joystick
   const onStickStart = (e: React.TouchEvent) => {
     const t = e.touches[0];
     stickOrigin.current = { cx: t.clientX, cy: t.clientY };
@@ -95,14 +94,14 @@ export default function Doom() {
 
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center">
-      <Script src="https://js-dos.com/v7/build/js-dos.js" onLoad={handleScriptLoad} />
-      <link rel="stylesheet" href="https://js-dos.com/v7/build/js-dos.css" />
+      <Script src="/js-dos.js" onLoad={handleScriptLoad} />
+      <link rel="stylesheet" href="/js-dos.css" />
 
       {/* js-dos mounts here */}
       <div ref={containerRef} className="w-full h-full" />
 
       {/* Loading state */}
-      {!loaded && (
+      {!loaded && !started && (
         <div
           className="absolute inset-0 flex items-center justify-center bg-black cursor-pointer"
           onClick={handleImpatientClick}
@@ -128,11 +127,9 @@ export default function Doom() {
         </div>
       )}
 
-      {/* Mobile controls — only renders after game starts */}
+      {/* Mobile controls */}
       {started && (
         <div className="absolute inset-0 pointer-events-none select-none">
-
-          {/* Left — joystick */}
           <div
             className="absolute bottom-8 left-8 w-28 h-28 rounded-full border-2 border-white/25 bg-white/8 pointer-events-auto touch-none flex items-center justify-center"
             onTouchStart={onStickStart}
@@ -143,22 +140,17 @@ export default function Doom() {
             <div className="w-11 h-11 rounded-full bg-white/20 border border-white/35" />
           </div>
 
-          {/* Right — action buttons */}
           <div className="absolute bottom-8 right-8 pointer-events-auto flex flex-col gap-3 items-end">
             <div className="flex gap-3">
-              {/* Weapon prev / next */}
               <button className="w-11 h-11 rounded bg-zinc-800/70 border border-zinc-500/40 text-white font-mono text-xs touch-none" {...btn('[')}>◀W</button>
               <button className="w-11 h-11 rounded bg-zinc-800/70 border border-zinc-500/40 text-white font-mono text-xs touch-none" {...btn(']')}>W▶</button>
             </div>
             <div className="flex gap-3">
-              {/* USE (Space) */}
               <button className="w-16 h-16 rounded-full bg-zinc-700/70 border border-zinc-400/40 text-white font-mono text-xs font-bold touch-none" {...btn(' ')}>USE</button>
-              {/* FIRE (Ctrl) */}
               <button className="w-16 h-16 rounded-full bg-red-800/70 border border-red-500/40 text-white font-mono text-xs font-bold touch-none" {...btn('Control')}>FIRE</button>
             </div>
           </div>
 
-          {/* ESC — top right */}
           <button
             className="absolute top-3 right-3 px-3 py-1 bg-zinc-900/80 border border-zinc-600/40 text-white font-mono text-xs pointer-events-auto touch-none"
             {...btn('Escape')}
@@ -171,7 +163,6 @@ export default function Doom() {
   );
 }
 
-// js-dos v7 listens for keyCode, not key string
 function keyCode(key: string): number {
   const map: Record<string, number> = {
     ArrowUp: 38, ArrowDown: 40, ArrowLeft: 37, ArrowRight: 39,
