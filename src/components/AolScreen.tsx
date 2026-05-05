@@ -106,18 +106,21 @@ export default function AolScreen() {
     let i = 0;
     const lineInterval = setInterval(() => {
       if (i < DIAL_LINES.length) {
-        setDialLines(prev => [...prev, DIAL_LINES[i]]);
-        i++;
+        const line = DIAL_LINES[i++];
+        setDialLines(prev => [...prev, line]);
       } else {
         clearInterval(lineInterval);
       }
     }, 280);
 
-    // Progress bar
+    // Progress bar — clearInterval kept outside updater to avoid side effects in pure fn
+    let done = false;
     const progInterval = setInterval(() => {
+      if (done) return;
       setProgress(p => {
-        if (p >= 100) { clearInterval(progInterval); return 100; }
-        return p + (Math.random() > 0.7 ? 1 : 2); // uneven like real dial-up
+        const next = Math.min(100, p + (Math.random() > 0.7 ? 1 : 2));
+        if (next >= 100) done = true;
+        return next;
       });
     }, 80);
 
@@ -127,6 +130,7 @@ export default function AolScreen() {
     const t4 = setTimeout(() => setShowAd(true), 9500);
 
     return () => {
+      done = true;
       clearInterval(lineInterval);
       clearInterval(progInterval);
       [t1, t2, t3, t4].forEach(clearTimeout);
