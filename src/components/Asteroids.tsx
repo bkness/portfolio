@@ -102,13 +102,21 @@ function initGS(hi = 0): GS {
   };
 }
 
+const MILESTONES: Record<number, string> = {
+  5:  "🔓 type 'doom' in the terminal",
+  7:  "🔓 you're getting somewhere...",
+  10: "🔓 type 'aol' in the terminal",
+};
+
 // ── component ──────────────────────────────────────────────────────────────
-export default function Asteroids() {
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
-  const gsRef      = useRef<GS>(initGS());
-  const keysRef    = useRef(new Set<string>());
-  const frameRef   = useRef(0);
+export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => void }) {
+  const canvasRef   = useRef<HTMLCanvasElement>(null);
+  const gsRef       = useRef<GS>(initGS());
+  const keysRef     = useRef(new Set<string>());
+  const frameRef    = useRef(0);
   const lastFireRef = useRef(0);
+  const toastRef    = useRef<{ msg: string; timer: number } | null>(null);
+  const shownRef    = useRef(new Set<number>());
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -230,6 +238,7 @@ export default function Asteroids() {
         ctx.font = '15px monospace'; ctx.fillStyle = COL;
         if (Math.floor(Date.now()/560)%2===0) ctx.fillText('[ PRESS SPACE TO START ]', CW/2, CH/2+55);
         ctx.shadowBlur=0; ctx.font='10px monospace'; ctx.fillStyle='#1a3a22';
+        ctx.fillText('reach level 5 to unlock something cool...', CW/2, CH/2+90);
         ctx.fillText('forged-shell v0.3.9  ·  idle since: never', CW/2, CH-14);
         return;
       }
@@ -255,6 +264,23 @@ export default function Asteroids() {
       ctx.textAlign = 'right'; ctx.fillText(`HI  ${Math.max(gs.hi,gs.score)}`, CW-14, 22);
       ctx.textAlign = 'center'; ctx.fillText(`LVL ${gs.level}`, CW/2, 22);
       for (let i=0; i<gs.lives; i++) drawMiniShip(14+i*20, 38);
+
+      // Toast
+      const toast = toastRef.current;
+      if (toast && toast.timer > 0) {
+        const alpha = Math.min(1, toast.timer / 30);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = 'rgba(1,10,4,0.82)';
+        ctx.roundRect(CW/2 - 210, CH - 70, 420, 36, 6);
+        ctx.fill();
+        ctx.font = '13px monospace'; ctx.fillStyle = COL;
+        ctx.shadowColor = COL; ctx.shadowBlur = 10;
+        ctx.textAlign = 'center';
+        ctx.fillText(toast.msg, CW/2, CH - 47);
+        ctx.restore();
+        toast.timer--;
+      }
 
       if (gs.phase === 'over') {
         ctx.fillStyle='rgba(1,10,4,0.72)'; ctx.fillRect(0,0,CW,CH);
@@ -337,6 +363,12 @@ export default function Asteroids() {
           gs.level++;
           const [rocks, nid] = spawnRocks(gs.level, gs.nid);
           gs.rocks=rocks; gs.nid=nid;
+          const msg = MILESTONES[gs.level];
+          if (msg && !shownRef.current.has(gs.level)) {
+            shownRef.current.add(gs.level);
+            toastRef.current = { msg, timer: 240 };
+            onUnlock?.(gs.level);
+          }
         }
       }
 
