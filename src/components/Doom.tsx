@@ -13,8 +13,10 @@ declare global {
 
 export default function Doom() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const dosRef       = useRef<Window['Dos'] | null>(null);
   const [loaded, setLoaded]   = useState(false);
   const [started, setStarted] = useState(false);
+  const [loadMsg, setLoadMsg] = useState('loading doom engine...');
   const held     = useRef(new Set<string>());
   const stickOrigin = useRef<{ cx: number; cy: number } | null>(null);
 
@@ -29,10 +31,29 @@ export default function Doom() {
     document.dispatchEvent(new KeyboardEvent('keyup', { key, keyCode: keyCode(key), bubbles: true }));
   };
 
+  const handleScriptLoad = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const D = (window as any).Dos as Window['Dos'] | undefined;
+    if (D) {
+      dosRef.current = D;
+      setLoaded(true);
+    } else {
+      console.error('[Doom] js-dos loaded but window.Dos is not set');
+      setLoadMsg('failed to load doom engine — try refreshing');
+    }
+  };
+
   const initGame = () => {
-    if (!window.Dos || !containerRef.current) return;
-    window.Dos(containerRef.current).run('https://cdn.dos.zone/custom/dos/doom.jsdos');
-    setStarted(true);
+    if (!dosRef.current || !containerRef.current) {
+      console.error('[Doom] initGame guard failed', { dos: dosRef.current, container: containerRef.current });
+      return;
+    }
+    try {
+      dosRef.current(containerRef.current).run('https://cdn.dos.zone/custom/dos/doom.jsdos');
+      setStarted(true);
+    } catch (err) {
+      console.error('[Doom] run failed', err);
+    }
   };
 
   // Joystick
@@ -67,7 +88,7 @@ export default function Doom() {
 
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center">
-      <Script src="https://js-dos.com/v7/build/js-dos.js" onLoad={() => setLoaded(true)} />
+      <Script src="https://js-dos.com/v7/build/js-dos.js" onLoad={handleScriptLoad} />
       <link rel="stylesheet" href="https://js-dos.com/v7/build/js-dos.css" />
 
       {/* js-dos mounts here */}
@@ -76,7 +97,10 @@ export default function Doom() {
       {/* Loading state */}
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <p className="text-[#00ff41] font-mono text-sm animate-pulse">loading doom engine...</p>
+          <div className="text-center space-y-2">
+            <p className="text-[#00ff41] font-mono text-sm animate-pulse">{loadMsg}</p>
+            <p className="text-zinc-600 font-mono text-xs">first load may take 10–20 seconds</p>
+          </div>
         </div>
       )}
 
