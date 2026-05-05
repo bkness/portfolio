@@ -68,12 +68,12 @@ export default function Doom() {
   const press = (key: string) => {
     if (held.current.has(key)) return;
     held.current.add(key);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key, keyCode: keyCode(key), bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { key, code: keyCode2code(key), keyCode: keyCode(key), bubbles: true }));
   };
 
   const release = (key: string) => {
     held.current.delete(key);
-    document.dispatchEvent(new KeyboardEvent('keyup', { key, keyCode: keyCode(key), bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent('keyup', { key, code: keyCode2code(key), keyCode: keyCode(key), bubbles: true }));
   };
 
   const onStickStart = (e: React.TouchEvent) => {
@@ -181,4 +181,12 @@ function keyCode(key: string): number {
     Control: 17, ' ': 32, Escape: 27, '[': 219, ']': 221,
   };
   return map[key] ?? 0;
+}
+
+function keyCode2code(key: string): string {
+  const map: Record<string, string> = {
+    ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown', ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight',
+    Control: 'ControlLeft', ' ': 'Space', Escape: 'Escape', '[': 'BracketLeft', ']': 'BracketRight',
+  };
+  return map[key] ?? key;
 }

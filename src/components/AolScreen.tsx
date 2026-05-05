@@ -275,7 +275,7 @@ export default function AolScreen() {
           <div className="flex gap-2 mt-2">
             <div style={{ ...sunken, padding: '2px 8px', flex: 2, color: '#444' }}>3 messages, 3 unread</div>
             <div style={{ ...sunken, padding: '2px 8px', flex: 1, color: '#444' }}>28.8 Kbps</div>
-            <div style={{ ...sunken, padding: '2px 8px', flex: 1, color: '#008000', fontWeight: 'bold' }}>● Connected</div>
+            <div style={{ ...sunken, padding: '2px 8px', flex: 1, color: '#000080', fontWeight: 'bold' }}>● Connected</div>
           </div>
         </div>
       )}
