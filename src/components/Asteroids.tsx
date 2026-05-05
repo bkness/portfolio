@@ -41,7 +41,7 @@ interface Particle {
   life: number; maxLife: number;
 }
 interface GS {
-  phase: 'title' | 'play' | 'dead' | 'over';
+  phase: 'title' | 'continue' | 'play' | 'dead' | 'over';
   ship: Ship;
   rocks: Rock[]; bullets: Bullet[]; particles: Particle[];
   score: number; hi: number; lives: number; level: number;
@@ -102,6 +102,20 @@ function initGS(hi = 0): GS {
   };
 }
 
+const SAVE_KEY = 'asteroids_save';
+function loadSave(): { hi: number; level: number } | null {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (typeof s.hi === 'number' && typeof s.level === 'number') return s;
+  } catch (_) {}
+  return null;
+}
+function writeSave(hi: number, level: number) {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ hi, level })); } catch (_) {}
+}
+
 const MILESTONES: Record<number, string> = {
   5:  "🔓 type 'doom' in the terminal",
   7:  "🔓 you're getting somewhere...",
@@ -111,13 +125,19 @@ const MILESTONES: Record<number, string> = {
 // ── component ──────────────────────────────────────────────────────────────
 export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => void }) {
   const canvasRef   = useRef<HTMLCanvasElement>(null);
-  const gsRef       = useRef<GS>(initGS());
+  const gsRef       = useRef<GS>(((): GS => {
+    const save = loadSave();
+    const gs = initGS(save?.hi ?? 0);
+    if (save) gs.phase = 'continue';
+    return gs;
+  })());
   const keysRef     = useRef(new Set<string>());
   const frameRef    = useRef(0);
   const lastFireRef = useRef(0);
   const toastRef    = useRef<{ msg: string; timer: number } | null>(null);
   const shownRef    = useRef(new Set<number>());
   const startRef    = useRef<(() => void) | null>(null);
+  const continueRef = useRef<(() => void) | null>(null);
 
   const tBtn = useCallback((code: string) => ({
     onTouchStart: (e: React.TouchEvent) => {
@@ -125,7 +145,8 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
       keysRef.current.add(code);
       if (code === 'Space') {
         const { phase } = gsRef.current;
-        if (phase === 'title' || phase === 'over') startRef.current?.();
+        if (phase === 'continue') continueRef.current?.();
+        else if (phase === 'title' || phase === 'over') startRef.current?.();
       }
     },
     onTouchEnd:    (e: React.TouchEvent) => { e.preventDefault(); keysRef.current.delete(code); },
@@ -143,7 +164,14 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
       const [rocks, nid] = spawnRocks(1, 1);
       gsRef.current = { ...initGS(hi), phase:'play', rocks, nid };
     };
-    startRef.current = startGame;
+    const continueGame = () => {
+      const save = loadSave();
+      if (!save) { startGame(); return; }
+      const [rocks, nid] = spawnRocks(save.level, 1);
+      gsRef.current = { ...initGS(save.hi), phase:'play', rocks, nid, level: save.level };
+    };
+    startRef.current   = startGame;
+    continueRef.current = continueGame;
 
     // ── input ─────────────────────────────────────────────────────────────
     const onKey = (e: KeyboardEvent) => {
@@ -151,7 +179,12 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
       if (e.type === 'keydown') {
         keys.add(e.code);
         const gs = gsRef.current;
-        if ((gs.phase==='title'||gs.phase==='over') && (e.code==='Space'||e.code==='Enter')) startGame();
+        if (gs.phase==='continue') {
+          if (e.code==='Space'||e.code==='Enter') continueGame();
+          if (e.code==='KeyN') startGame();
+        } else if ((gs.phase==='title'||gs.phase==='over') && (e.code==='Space'||e.code==='Enter')) {
+          startGame();
+        }
       } else {
         keys.delete(e.code);
       }
@@ -240,6 +273,26 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
       // Rocks always draw
       ctx.shadowBlur = 0;
       for (const r of gs.rocks) drawRock(r);
+
+      if (gs.phase === 'continue') {
+        const save = loadSave();
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 52px monospace'; ctx.fillStyle = COL;
+        ctx.shadowColor = COL; ctx.shadowBlur = 22;
+        ctx.fillText('ASTEROIDS', CW/2, CH/2 - 90);
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = COL; ctx.shadowBlur = 14;
+        ctx.font = '18px monospace'; ctx.fillStyle = COL;
+        ctx.fillText('[ CONTINUE ]', CW/2, CH/2 - 18);
+        ctx.shadowBlur = 0;
+        ctx.font = '11px monospace'; ctx.fillStyle = '#4a7a55';
+        ctx.fillText(`level ${save?.level ?? 1}  ·  hi ${save?.hi ?? 0}`, CW/2, CH/2 + 10);
+        ctx.font = '14px monospace'; ctx.fillStyle = '#2d5a38';
+        ctx.fillText('[ N ]  new game', CW/2, CH/2 + 50);
+        ctx.font = '11px monospace'; ctx.fillStyle = '#1a3a22';
+        ctx.fillText('space / fire to continue', CW/2, CH/2 + 80);
+        return;
+      }
 
       if (gs.phase === 'title') {
         ctx.textAlign = 'center';
@@ -366,7 +419,7 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
           for (const r of gs.rocks) {
             if (Math.hypot(s.x-r.x, s.y-r.y) < r.r+SHIP_R*0.75) {
               gs.lives--; explode(gs, s.x, s.y, 22);
-              if (gs.lives<=0) { gs.phase='over'; gs.hi=Math.max(gs.hi,gs.score); }
+              if (gs.lives<=0) { gs.phase='over'; gs.hi=Math.max(gs.hi,gs.score); writeSave(gs.hi, gs.level); }
               else              { gs.phase='dead'; gs.deadTimer=100; }
               break;
             }
