@@ -47,6 +47,16 @@ export default function Doom() {
     }, 50);
   };
 
+  useEffect(() => {
+    // Script deduplicates — if Dos is already on window from a prior mount, onLoad won't re-fire
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const D = (window as any).Dos;
+    if (typeof D === 'function') {
+      dosRef.current = D;
+      setLoaded(true);
+    }
+  }, []);
+
   useEffect(() => () => { ciRef.current?.stop(); }, []);
 
   const handleImpatientClick = () => {
