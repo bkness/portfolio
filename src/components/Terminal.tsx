@@ -346,6 +346,32 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
       return;
     }
 
+    if (trimmed === 'doom') {
+      setBooted(false);
+      const lines = [
+        '  DOOM Shareware v1.9',
+        '  ──────────────────────────────────',
+        '  V_Init: allocate screens.',
+        '  W_Init: Init WADfiles.',
+        '  DOOM1.WAD found',
+        '  R_Init: Init DOOM refresh daemon - [................]',
+        '  P_Init: Init Playloop state.',
+        '  S_Init: Setting up sound.',
+        '  HU_Init: Setting up heads up display.',
+        '',
+        '  loading... ████████████████ 100%',
+      ];
+      lines.forEach((line, i) => {
+        setTimeout(() => {
+          setOutput(prev => [...prev, { type: i === 0 ? 'system' : 'output', content: line }]);
+          if (i === lines.length - 1) {
+            setTimeout(() => { setBooted(true); onOpenProject?.(-3); }, 400);
+          }
+        }, i * 80);
+      });
+      return;
+    }
+
     if (trimmed === 'aol') {
       setBooted(false);
       setOutput(prev => [...prev,

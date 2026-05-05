@@ -5,6 +5,7 @@ import { TERMINAL_PROJECTS, ProjectData } from '@/data/projects';
 import Asteroids from '@/components/Asteroids';
 import DoomScroll from '@/components/DoomScroll';
 import AolScreen from '@/components/AolScreen';
+import Doom from '@/components/Doom';
 
 // ── Forged scan lines (module-level to avoid closure issues) ────────────────
 const FORGED_LINES = [
@@ -295,10 +296,11 @@ type Props = {
 export default function FakeBrowser({ projectId, onClose }: Props) {
   const [loaded, setLoaded] = useState(false);
 
-  const isGame    = projectId === 0;
-  const isDoom    = projectId === -1;
-  const isAol     = projectId === -2;
-  const isSpecial = isGame || isDoom || isAol;
+  const isGame     = projectId === 0;
+  const isDoom     = projectId === -1;
+  const isAol      = projectId === -2;
+  const isDoomGame = projectId === -3;
+  const isSpecial  = isGame || isDoom || isAol || isDoomGame;
   const project: ProjectData | undefined = !isSpecial && projectId
     ? TERMINAL_PROJECTS.find(p => p.id === projectId)
     : undefined;
@@ -323,8 +325,8 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
   if (projectId === null) return null;
   if (!isSpecial && !project) return null;
 
-  const displayUrl = isGame ? 'game://asteroids' : isDoom ? 'social://doom-scroll' : isAol ? 'aol://you-ve-got-mail' : `http://localhost:${project!.localPort}`;
-  const tabName    = isGame ? 'asteroids.exe'    : isDoom ? 'feedr — doom scroll'  : isAol ? 'AOL 9.0'              : project!.name;
+  const displayUrl = isGame ? 'game://asteroids' : isDoom ? 'social://doom-scroll' : isAol ? 'aol://you-ve-got-mail' : isDoomGame ? 'doom://shareware.wad' : `http://localhost:${project!.localPort}`;
+  const tabName    = isGame ? 'asteroids.exe'    : isDoom ? 'feedr — doom scroll'  : isAol ? 'AOL 9.0'              : isDoomGame ? 'DOOM.EXE'            : project!.name;
 
   return (
     <>
@@ -379,8 +381,8 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
               </div>
 
               <div className="flex-1 bg-[#252525] rounded-md px-2 py-1.5 text-xs font-mono text-gray-400 border border-[#333] flex items-center gap-2 min-w-0">
-                <span className={`text-[10px] shrink-0 ${isGame ? 'text-yellow-500' : isDoom ? 'text-pink-500' : isAol ? 'text-blue-400' : 'text-green-500'}`}>
-                  {isGame ? '🎮' : isDoom ? '📱' : isAol ? '📬' : '🔒'}
+                <span className={`text-[10px] shrink-0 ${isGame ? 'text-yellow-500' : isDoom ? 'text-pink-500' : isAol ? 'text-blue-400' : isDoomGame ? 'text-red-500' : 'text-green-500'}`}>
+                  {isGame ? '🎮' : isDoom ? '📱' : isAol ? '📬' : isDoomGame ? '💀' : '🔒'}
                 </span>
                 <span className="truncate">{displayUrl}</span>
               </div>
@@ -412,7 +414,7 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
               <div className="h-full flex items-center justify-center bg-[#010a04]">
                 <div className="flex items-center gap-3 font-mono text-sm text-[#4a7a55]">
                   <span className="inline-block w-2 h-2 rounded-full bg-[#4a7a55] animate-ping" />
-                  {isGame ? 'initializing...' : isAol ? 'connecting...' : 'loading...'}
+                  {isGame ? 'initializing...' : isAol ? 'connecting...' : isDoomGame ? 'loading wad...' : 'loading...'}
                 </div>
               </div>
             ) : isGame ? (
@@ -421,6 +423,8 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
               <DoomScroll />
             ) : isAol ? (
               <AolScreen />
+            ) : isDoomGame ? (
+              <Doom />
             ) : (
               Preview && <Preview />
             )}
