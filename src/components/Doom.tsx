@@ -1,12 +1,13 @@
 'use client';
 
 import Script from 'next/script';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Doom() {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dosRef       = useRef<((el: HTMLElement, opts: Record<string, unknown>) => unknown) | null>(null);
+  const dosRef       = useRef<((el: HTMLElement, opts: Record<string, unknown>) => { stop: () => Promise<void> }) | null>(null);
+  const ciRef        = useRef<{ stop: () => Promise<void> } | null>(null);
   const skipOverlay  = useRef(false);
   const [loaded, setLoaded]   = useState(false);
   const [started, setStarted] = useState(false);
@@ -20,7 +21,7 @@ export default function Doom() {
       return;
     }
     try {
-      dosRef.current(containerRef.current, {
+      ciRef.current = dosRef.current(containerRef.current, {
         url: '/doom.jsdos',
         pathPrefix: `${window.location.origin}/emulators/`,
         kiosk: true,
@@ -45,6 +46,8 @@ export default function Doom() {
       }
     }, 50);
   };
+
+  useEffect(() => () => { ciRef.current?.stop(); }, []);
 
   const handleImpatientClick = () => {
     if (skipOverlay.current) return;
@@ -95,7 +98,6 @@ export default function Doom() {
   return (
     <div className="relative w-full h-full bg-black flex items-center justify-center">
       <Script src="/js-dos.js" onLoad={handleScriptLoad} />
-      <link rel="stylesheet" href="/js-dos.css" />
 
       {/* js-dos mounts here */}
       <div ref={containerRef} className="w-full h-full" />

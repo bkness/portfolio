@@ -317,10 +317,13 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
   }, [projectId, isSpecial]);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const handler = (e: KeyboardEvent) => {
+      // ESC is used for mouse-unlock inside DOOM — don't let it close the browser
+      if (e.key === 'Escape' && !isDoomGame) onClose();
+    };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, [onClose, isDoomGame]);
 
   if (projectId === null) return null;
   if (!isSpecial && !project) return null;
