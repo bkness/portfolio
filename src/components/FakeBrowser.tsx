@@ -6,6 +6,7 @@ import Asteroids from '@/components/Asteroids';
 import DoomScroll from '@/components/DoomScroll';
 import AolScreen from '@/components/AolScreen';
 import Doom from '@/components/Doom';
+import Wolfenstein from '@/components/Wolfenstein';
 
 // ── Forged scan lines (module-level to avoid closure issues) ────────────────
 const FORGED_LINES = [
@@ -300,7 +301,8 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
   const isDoom     = projectId === -1;
   const isAol      = projectId === -2;
   const isDoomGame = projectId === -3;
-  const isSpecial  = isGame || isDoom || isAol || isDoomGame;
+  const isWolf     = projectId === -4;
+  const isSpecial  = isGame || isDoom || isAol || isDoomGame || isWolf;
   const project: ProjectData | undefined = !isSpecial && projectId
     ? TERMINAL_PROJECTS.find(p => p.id === projectId)
     : undefined;
@@ -319,17 +321,17 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       // ESC is used for mouse-unlock inside DOOM — don't let it close the browser
-      if (e.key === 'Escape' && !isDoomGame) onClose();
+      if (e.key === 'Escape' && !isDoomGame && !isWolf) onClose();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onClose, isDoomGame]);
+  }, [onClose, isDoomGame, isWolf]);
 
   if (projectId === null) return null;
   if (!isSpecial && !project) return null;
 
-  const displayUrl = isGame ? 'game://asteroids' : isDoom ? 'social://doom-scroll' : isAol ? 'aol://you-ve-got-mail' : isDoomGame ? 'doom://shareware.wad' : `http://localhost:${project!.localPort}`;
-  const tabName    = isGame ? 'asteroids.exe'    : isDoom ? 'feedr — doom scroll'  : isAol ? 'AOL 9.0'              : isDoomGame ? 'DOOM.EXE'            : project!.name;
+  const displayUrl = isGame ? 'game://asteroids' : isDoom ? 'social://doom-scroll' : isAol ? 'aol://you-ve-got-mail' : isDoomGame ? 'doom://shareware.wad' : isWolf ? 'wolf3d://episode1.wl6' : `http://localhost:${project!.localPort}`;
+  const tabName    = isGame ? 'asteroids.exe'    : isDoom ? 'feedr — doom scroll'  : isAol ? 'AOL 9.0'              : isDoomGame ? 'DOOM.EXE'            : isWolf ? 'WOLF3D.EXE'          : project!.name;
 
   return (
     <>
@@ -384,8 +386,8 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
               </div>
 
               <div className="flex-1 bg-[#252525] rounded-md px-2 py-1.5 text-xs font-mono text-gray-400 border border-[#333] flex items-center gap-2 min-w-0">
-                <span className={`text-[10px] shrink-0 ${isGame ? 'text-yellow-500' : isDoom ? 'text-pink-500' : isAol ? 'text-blue-400' : isDoomGame ? 'text-red-500' : 'text-green-500'}`}>
-                  {isGame ? '🎮' : isDoom ? '📱' : isAol ? '📬' : isDoomGame ? '💀' : '🔒'}
+                <span className={`text-[10px] shrink-0 ${isGame ? 'text-yellow-500' : isDoom ? 'text-pink-500' : isAol ? 'text-blue-400' : isDoomGame ? 'text-red-500' : isWolf ? 'text-[#c8a000]' : 'text-green-500'}`}>
+                  {isGame ? '🎮' : isDoom ? '📱' : isAol ? '📬' : isDoomGame ? '💀' : isWolf ? '🐺' : '🔒'}
                 </span>
                 <span className="truncate">{displayUrl}</span>
               </div>
@@ -417,7 +419,7 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
               <div className="h-full flex items-center justify-center bg-[#010a04]">
                 <div className="flex items-center gap-3 font-mono text-sm text-[#4a7a55]">
                   <span className="inline-block w-2 h-2 rounded-full bg-[#4a7a55] animate-ping" />
-                  {isGame ? 'initializing...' : isAol ? 'connecting...' : isDoomGame ? 'loading wad...' : 'loading...'}
+                  {isGame ? 'initializing...' : isAol ? 'connecting...' : isDoomGame ? 'loading wad...' : isWolf ? 'loading episode 1...' : 'loading...'}
                 </div>
               </div>
             ) : isGame ? (
@@ -428,6 +430,8 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
               <AolScreen />
             ) : isDoomGame ? (
               <Doom />
+            ) : isWolf ? (
+              <Wolfenstein />
             ) : (
               Preview && <Preview />
             )}

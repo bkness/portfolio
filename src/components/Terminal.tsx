@@ -89,6 +89,7 @@ const COMMANDS: Record<string, () => string[]> = {
     "  clear                Clear terminal",
     "  doom scroll          ...",
     "  slack off            ...",
+    "  wolf                 ...",
   ],
   clear: () => [],
 };
@@ -370,6 +371,29 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
           setOutput(prev => [...prev, { type: i === 0 ? 'system' : 'output', content: line }]);
           if (i === lines.length - 1) {
             setTimeout(() => { setBooted(true); onOpenProject?.(-3); }, 400);
+          }
+        }, i * 80);
+      });
+      return;
+    }
+
+    if (trimmed === 'wolf') {
+      setBooted(false);
+      const lines = [
+        '  Wolfenstein 3D — Apogee Software, 1992',
+        '  ──────────────────────────────────────',
+        '  Initializing sound driver...',
+        '  Loading VSWAP.WL6...',
+        '  Loading GAMEMAPS.WL6...',
+        '  Loading AUDIOHED.WL6...',
+        '',
+        '  loading... ████████████████ 100%',
+      ];
+      lines.forEach((line, i) => {
+        setTimeout(() => {
+          setOutput(prev => [...prev, { type: i === 0 ? 'system' : 'output', content: line }]);
+          if (i === lines.length - 1) {
+            setTimeout(() => { setBooted(true); onOpenProject?.(-4); }, 400);
           }
         }, i * 80);
       });
