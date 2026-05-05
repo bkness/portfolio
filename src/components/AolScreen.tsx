@@ -240,7 +240,7 @@ export default function AolScreen() {
             {/* Header */}
             <div className="flex" style={{ background: '#c0c0c0', borderBottom: '1px solid #808080' }}>
               {['', 'From', 'Subject', 'Time'].map((h, i) => (
-                <div key={i} style={{ ...raised, padding: '3px 8px', flex: i === 2 ? 2 : 1, fontSize: 11, fontWeight: 'bold' }}>{h}</div>
+                <div key={i} style={{ ...raised, padding: '3px 8px', flex: i === 2 ? 2 : 1, fontSize: 11, fontWeight: 'bold', color: '#000080' }}>{h}</div>
               ))}
             </div>
 
@@ -257,12 +257,12 @@ export default function AolScreen() {
                 <div style={{ padding: '5px 8px', flex: 0.3, textAlign: 'center' }}>
                   {email.unread ? '📧' : '📨'}
                 </div>
-                <div style={{ padding: '5px 8px', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ padding: '5px 8px', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#000080' }}>
                   {email.from}
                 </div>
-                <div style={{ padding: '5px 8px', flex: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ padding: '5px 8px', flex: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#000080' }}>
                   {email.subject}
-                  <span style={{ fontWeight: 'normal', color: '#666', marginLeft: 8 }}>— {email.preview}</span>
+                  <span style={{ fontWeight: 'normal', color: '#444', marginLeft: 8 }}>— {email.preview}</span>
                 </div>
                 <div style={{ padding: '5px 8px', flex: 0.7, color: '#666', whiteSpace: 'nowrap' }}>
                   {email.time}
