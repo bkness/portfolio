@@ -150,7 +150,7 @@ const VENUES = [
 function NightOwlzPreview() {
 
   return (
-    <div className="h-full bg-[#09000f] text-white overflow-auto flex items-start justify-center gap-10 py-8 px-6">
+    <div className="h-full bg-[#09000f] text-white overflow-auto flex flex-col md:flex-row items-center md:items-start justify-start md:justify-center gap-6 md:gap-10 py-8 px-6">
       <div className="w-[300px] shrink-0 bg-[#0d0018] rounded-[36px] border-2 border-[#2a1a4a] overflow-hidden shadow-2xl shadow-purple-900/20">
         <div className="bg-[#0d0018] px-6 pt-3 pb-1 flex items-center justify-between text-[10px] text-gray-500">
           <span>9:41</span>
@@ -194,7 +194,7 @@ function NightOwlzPreview() {
         </div>
       </div>
 
-      <div className="mt-2">
+      <div className="mt-2 flex flex-col items-center md:items-start text-center md:text-left">
         <div className="text-base font-bold text-purple-300 mb-3">nightowlz</div>
         <div className="space-y-1.5 text-xs text-gray-500 leading-5">
           <div className="text-gray-400">React Native · Expo</div>
@@ -203,7 +203,7 @@ function NightOwlzPreview() {
           <div>iOS nightlife discovery</div>
           <div>Published to App Store</div>
         </div>
-        <div className="mt-5 flex flex-col gap-2">
+        <div className="mt-5 flex flex-col gap-2 items-center md:items-start">
           {[
             { label: 'Venues', color: 'bg-purple-900/40 text-purple-300' },
             { label: 'Auth',   color: 'bg-pink-900/40 text-pink-300' },

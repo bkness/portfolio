@@ -526,7 +526,7 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="flex-1 bg-transparent outline-none text-[#00ff41] caret-[#00ff41]"
+                className="flex-1 bg-transparent outline-none text-base md:text-sm text-[#00ff41] caret-[#00ff41]"
                 spellCheck={false}
                 autoComplete="off"
                 autoCapitalize="off"

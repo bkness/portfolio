@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 // ── constants ──────────────────────────────────────────────────────────────
 const CW = 820;
@@ -119,7 +119,7 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
   const shownRef    = useRef(new Set<number>());
   const startRef    = useRef<(() => void) | null>(null);
 
-  const tBtn = (code: string) => ({
+  const tBtn = useCallback((code: string) => ({
     onTouchStart: (e: React.TouchEvent) => {
       e.preventDefault();
       keysRef.current.add(code);
@@ -130,7 +130,7 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
     },
     onTouchEnd:    (e: React.TouchEvent) => { e.preventDefault(); keysRef.current.delete(code); },
     onTouchCancel: (e: React.TouchEvent) => { e.preventDefault(); keysRef.current.delete(code); },
-  });
+  }), []);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -414,31 +414,32 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
   }, []);
 
   return (
-    <div className="relative h-full flex items-center justify-center bg-[#010a04]">
+    <div className="w-full h-full bg-[#010a04] flex flex-col items-center justify-center">
+      <div className="relative w-full" style={{ maxWidth: CW, aspectRatio: `${CW}/${CH}` }}>
       <canvas
         ref={canvasRef}
         width={CW}
         height={CH}
-        style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+        style={{ width: '100%', height: '100%', display: 'block' }}
       />
 
-      {/* Mobile controls */}
+      {/* Mobile controls — overlaid on canvas */}
       <div className="absolute inset-0 pointer-events-none select-none">
         {/* Left — turn + thrust */}
-        <div className="absolute bottom-6 left-4 pointer-events-auto flex flex-col items-center gap-2">
+        <div className="absolute bottom-4 left-2 pointer-events-auto flex flex-col items-center gap-3">
           {/* Thrust */}
           <button
-            className="w-14 h-14 rounded-full border border-[#00ff41]/30 bg-[#010a04]/80 text-[#00ff41] font-mono text-xs font-bold touch-none"
+            className="w-14 h-14 rounded-full border border-green/30 bg-[#010a04]/80 text-green font-mono text-xs font-bold touch-none"
             {...tBtn('ArrowUp')}
           >▲</button>
           {/* Turn row */}
-          <div className="flex gap-2">
+          <div className="flex gap-5">
             <button
-              className="w-14 h-14 rounded-full border border-[#00ff41]/30 bg-[#010a04]/80 text-[#00ff41] font-mono text-xs font-bold touch-none"
+              className="w-14 h-14 rounded-full border border-green/30 bg-[#010a04]/80 text-green font-mono text-xs font-bold touch-none"
               {...tBtn('ArrowLeft')}
             >◄</button>
             <button
-              className="w-14 h-14 rounded-full border border-[#00ff41]/30 bg-[#010a04]/80 text-[#00ff41] font-mono text-xs font-bold touch-none"
+              className="w-14 h-14 rounded-full border border-green/30 bg-[#010a04]/80 text-green font-mono text-xs font-bold touch-none"
               {...tBtn('ArrowRight')}
             >►</button>
           </div>
@@ -446,9 +447,10 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
 
         {/* Right — fire */}
         <button
-          className="absolute bottom-6 right-4 w-20 h-20 rounded-full border border-[#00ff41]/40 bg-[#00ff41]/10 text-[#00ff41] font-mono text-xs font-bold pointer-events-auto touch-none"
+          className="absolute bottom-4 right-4 w-20 h-20 rounded-full border border-green/40 bg-green/10 text-green font-mono text-xs font-bold pointer-events-auto touch-none"
           {...tBtn('Space')}
         >FIRE</button>
+      </div>
       </div>
     </div>
   );

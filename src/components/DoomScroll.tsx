@@ -230,7 +230,7 @@ function FeedCard({ item }: { item: FeedItem }) {
 
 export default function DoomScroll() {
   return (
-    <div className="h-full bg-[#050505] overflow-auto flex items-start justify-center py-8 px-6 gap-10">
+    <div className="h-full bg-[#050505] overflow-auto flex flex-col md:flex-row items-center md:items-start justify-start md:justify-center py-8 px-6 gap-6 md:gap-10">
       {/* Phone */}
       <div className="w-[300px] shrink-0 bg-[#0a0a0a] rounded-[36px] border-2 border-[#1a1a1a] overflow-hidden shadow-2xl">
         {/* Status bar */}
@@ -275,7 +275,7 @@ export default function DoomScroll() {
       </div>
 
       {/* Side info */}
-      <div className="mt-4 max-w-[180px]">
+      <div className="mt-4 max-w-[180px] flex flex-col items-center md:items-start text-center md:text-left">
         <div className="text-sm font-bold text-white mb-3">bkness</div>
         <div className="space-y-3 text-[10px] text-gray-600 font-mono">
           <a
