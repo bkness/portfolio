@@ -431,11 +431,15 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
           gs.level++;
           const [rocks, nid] = spawnRocks(gs.level, gs.nid);
           gs.rocks=rocks; gs.nid=nid;
+          const extraLife = gs.level % 5 === 0;
+          if (extraLife) gs.lives++;
           const msg = MILESTONES[gs.level];
           if (msg && !shownRef.current.has(gs.level)) {
             shownRef.current.add(gs.level);
-            toastRef.current = { msg, timer: 240 };
+            toastRef.current = { msg: extraLife ? `+1 LIFE  ·  ${msg}` : msg, timer: 240 };
             onUnlock?.(gs.level);
+          } else if (extraLife) {
+            toastRef.current = { msg: '+1 LIFE', timer: 240 };
           }
         }
       }
