@@ -421,6 +421,19 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
       return;
     }
 
+    if (trimmed === 'resume') {
+      setOutput(prev => [...prev,
+        { type: 'system', content: '  downloading resume...' },
+        { type: 'output', content: '  brandon-kelly-resume.pdf ████████████████ done' },
+        { type: 'system', content: '' },
+      ]);
+      const a = document.createElement('a');
+      a.href = '/resume.pdf';
+      a.download = 'brandon-kelly-resume.pdf';
+      a.click();
+      return;
+    }
+
     // aliases so short-form commands work too
     const aliases: Record<string, string> = {
       skills: 'skills --list',

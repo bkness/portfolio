@@ -103,7 +103,7 @@ function initGS(hi = 0): GS {
 }
 
 const SAVE_KEY = 'asteroids_save';
-function loadSave(): { hi: number; level: number } | null {
+function loadSave(): { hi: number; level: number; unlocked?: number[] } | null {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
@@ -112,13 +112,13 @@ function loadSave(): { hi: number; level: number } | null {
   } catch (_) {}
   return null;
 }
-function writeSave(hi: number, level: number) {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ hi, level })); } catch (_) {}
+function writeSave(hi: number, level: number, unlocked: number[]) {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ hi, level, unlocked })); } catch (_) {}
 }
 
 const MILESTONES: Record<number, string> = {
   5:  "🔓 type 'doom' in the terminal",
-  7:  "🔓 you're getting somewhere...",
+  7:  "🔓 type 'wolf' in the terminal",
   10: "🔓 type 'aol' in the terminal",
 };
 
@@ -135,7 +135,7 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
   const frameRef    = useRef(0);
   const lastFireRef = useRef(0);
   const toastRef    = useRef<{ msg: string; timer: number } | null>(null);
-  const shownRef    = useRef(new Set<number>());
+  const shownRef    = useRef(new Set<number>(loadSave()?.unlocked ?? []));
   const startRef    = useRef<(() => void) | null>(null);
   const continueRef = useRef<(() => void) | null>(null);
 
@@ -419,7 +419,7 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
           for (const r of gs.rocks) {
             if (Math.hypot(s.x-r.x, s.y-r.y) < r.r+SHIP_R*0.75) {
               gs.lives--; explode(gs, s.x, s.y, 22);
-              if (gs.lives<=0) { gs.phase='over'; gs.hi=Math.max(gs.hi,gs.score); writeSave(gs.hi, gs.level); }
+              if (gs.lives<=0) { gs.phase='over'; gs.hi=Math.max(gs.hi,gs.score); writeSave(gs.hi, gs.level, [...shownRef.current]); }
               else              { gs.phase='dead'; gs.deadTimer=100; }
               break;
             }
@@ -436,6 +436,7 @@ export default function Asteroids({ onUnlock }: { onUnlock?: (level: number) => 
           const msg = MILESTONES[gs.level];
           if (msg && !shownRef.current.has(gs.level)) {
             shownRef.current.add(gs.level);
+            writeSave(gs.hi, gs.level, [...shownRef.current]);
             toastRef.current = { msg: extraLife ? `+1 LIFE  ·  ${msg}` : msg, timer: 240 };
             onUnlock?.(gs.level);
           } else if (extraLife) {
