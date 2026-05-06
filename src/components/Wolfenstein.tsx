@@ -21,6 +21,7 @@ export default function Wolfenstein() {
         url: '/wolf3d.jsdos',
         pathPrefix: `${window.location.origin}/emulators/`,
         kiosk: true,
+        mobileControls: false,
       });
       setStarted(true);
     } catch (err) {
@@ -51,6 +52,14 @@ export default function Wolfenstein() {
   }, []);
 
   useEffect(() => () => { ciRef.current?.stop(); }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    const style = document.createElement('style');
+    style.textContent = '.nipple, .emulator-button, .emulator-options, .emulator-control-select { display: none !important; }';
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, [started]);
 
   const handleImpatientClick = () => {
     if (skipOverlay.current) return;
@@ -108,7 +117,7 @@ export default function Wolfenstein() {
       )}
 
       {started && (
-        <div className="absolute inset-0 pointer-events-none select-none">
+        <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 1001 }}>
           {/* Left — D-pad */}
           <div className="absolute bottom-6 left-4 pointer-events-auto flex flex-col items-center gap-1.5">
             <button className={`w-12 h-12 ${btnCls}`} {...btn('ArrowUp')}>▲</button>
@@ -122,21 +131,15 @@ export default function Wolfenstein() {
           {/* Right — strafe + action */}
           <div className="absolute bottom-6 right-4 pointer-events-auto flex flex-col gap-2 items-end">
             <div className="flex gap-2">
-              <button className={`w-11 h-11 ${btnCls}`} {...btn('[')}>◀S</button>
-              <button className={`w-11 h-11 ${btnCls}`} {...btn(']')}>S▶</button>
+              <button className={`w-11 h-11 ${btnCls}`} {...btn(',')}>◀S</button>
+              <button className={`w-11 h-11 ${btnCls}`} {...btn('.')}>S▶</button>
             </div>
             <div className="flex gap-2">
-              <button className={`w-14 h-14 rounded-full bg-zinc-700/70 border border-zinc-400/40 text-white font-mono text-xs font-bold touch-none`} {...btn(' ')}>OPEN</button>
+              <button className={`w-14 h-14 rounded-full bg-zinc-700/70 border border-zinc-400/40 text-white font-mono text-xs font-bold touch-none`} {...btn('Enter')}>OPEN</button>
               <button className={`w-14 h-14 rounded-full bg-[#8a6000]/70 border border-[#c8a000]/40 text-white font-mono text-xs font-bold touch-none`} {...btn('Control')}>FIRE</button>
             </div>
           </div>
 
-          <button
-            className="absolute top-3 right-3 px-3 py-1 bg-zinc-900/80 border border-zinc-600/40 text-white font-mono text-xs pointer-events-auto touch-none"
-            {...btn('Escape')}
-          >
-            ESC
-          </button>
         </div>
       )}
     </div>
@@ -146,7 +149,7 @@ export default function Wolfenstein() {
 function keyCode(key: string): number {
   const map: Record<string, number> = {
     ArrowUp: 38, ArrowDown: 40, ArrowLeft: 37, ArrowRight: 39,
-    Control: 17, ' ': 32, Escape: 27, '[': 219, ']': 221,
+    Control: 17, Enter: 13, ' ': 32, Escape: 27, ',': 188, '.': 190,
   };
   return map[key] ?? 0;
 }
@@ -154,7 +157,7 @@ function keyCode(key: string): number {
 function keyCode2code(key: string): string {
   const map: Record<string, string> = {
     ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown', ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight',
-    Control: 'ControlLeft', ' ': 'Space', Escape: 'Escape', '[': 'BracketLeft', ']': 'BracketRight',
+    Control: 'ControlLeft', Enter: 'Enter', ' ': 'Space', Escape: 'Escape', ',': 'Comma', '.': 'Period',
   };
   return map[key] ?? key;
 }

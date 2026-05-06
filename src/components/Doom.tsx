@@ -24,6 +24,7 @@ export default function Doom() {
         url: '/doom.jsdos',
         pathPrefix: `${window.location.origin}/emulators/`,
         kiosk: true,
+        mobileControls: false,
       });
       setStarted(true);
     } catch (err) {
@@ -57,6 +58,16 @@ export default function Doom() {
   }, []);
 
   useEffect(() => () => { ciRef.current?.stop(); }, []);
+
+  // js-dos v8 injects its own mobile UI (nipple joystick + emulator buttons).
+  // CSS injection beats MutationObserver here — hides them even if js-dos re-creates them.
+  useEffect(() => {
+    if (!started) return;
+    const style = document.createElement('style');
+    style.textContent = '.nipple, .emulator-button, .emulator-options, .emulator-control-select { display: none !important; }';
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, [started]);
 
   const handleImpatientClick = () => {
     if (skipOverlay.current) return;
@@ -118,13 +129,13 @@ export default function Doom() {
 
       {/* Mobile controls */}
       {started && (
-        <div className="absolute inset-0 pointer-events-none select-none">
+        <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 1001 }}>
           {/* Left — D-pad */}
           <div className="absolute bottom-6 left-4 pointer-events-auto flex flex-col items-center gap-1.5">
-            <button className={`w-12 h-12 ${btnCls}`} {...btn('ArrowUp')}>▲</button>
+            <button className={`w-12 h-12 ${btnCls}`} {...btn('w')}>▲</button>
             <div className="flex gap-1.5">
               <button className={`w-12 h-12 ${btnCls}`} {...btn('ArrowLeft')}>◄</button>
-              <button className={`w-12 h-12 ${btnCls}`} {...btn('ArrowDown')}>▼</button>
+              <button className={`w-12 h-12 ${btnCls}`} {...btn('s')}>▼</button>
               <button className={`w-12 h-12 ${btnCls}`} {...btn('ArrowRight')}>►</button>
             </div>
           </div>
@@ -132,21 +143,15 @@ export default function Doom() {
           {/* Right — strafe + action */}
           <div className="absolute bottom-6 right-4 pointer-events-auto flex flex-col gap-2 items-end">
             <div className="flex gap-2">
-              <button className={`w-11 h-11 ${btnCls}`} {...btn('[')}>◀W</button>
-              <button className={`w-11 h-11 ${btnCls}`} {...btn(']')}>W▶</button>
+              <button className={`w-11 h-11 ${btnCls}`} {...btn('a')}>◀S</button>
+              <button className={`w-11 h-11 ${btnCls}`} {...btn('d')}>S▶</button>
             </div>
             <div className="flex gap-2">
-              <button className={`w-14 h-14 rounded-full bg-zinc-700/70 border border-zinc-400/40 text-white font-mono text-xs font-bold touch-none`} {...btn(' ')}>USE</button>
+              <button className={`w-14 h-14 rounded-full bg-zinc-700/70 border border-zinc-400/40 text-white font-mono text-xs font-bold touch-none`} {...btn('Enter')}>USE</button>
               <button className={`w-14 h-14 rounded-full bg-red-800/70 border border-red-500/40 text-white font-mono text-xs font-bold touch-none`} {...btn('Control')}>FIRE</button>
             </div>
           </div>
 
-          <button
-            className="absolute top-3 right-3 px-3 py-1 bg-zinc-900/80 border border-zinc-600/40 text-white font-mono text-xs pointer-events-auto touch-none"
-            {...btn('Escape')}
-          >
-            ESC
-          </button>
         </div>
       )}
     </div>
@@ -155,16 +160,18 @@ export default function Doom() {
 
 function keyCode(key: string): number {
   const map: Record<string, number> = {
-    ArrowUp: 38, ArrowDown: 40, ArrowLeft: 37, ArrowRight: 39,
-    Control: 17, ' ': 32, Escape: 27, '[': 219, ']': 221,
+    ArrowLeft: 37, ArrowRight: 39,
+    Control: 17, Enter: 13, ' ': 32, Escape: 27,
+    w: 87, s: 83, a: 65, d: 68,
   };
   return map[key] ?? 0;
 }
 
 function keyCode2code(key: string): string {
   const map: Record<string, string> = {
-    ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown', ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight',
-    Control: 'ControlLeft', ' ': 'Space', Escape: 'Escape', '[': 'BracketLeft', ']': 'BracketRight',
+    ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight',
+    Control: 'ControlLeft', Enter: 'Enter', ' ': 'Space', Escape: 'Escape',
+    w: 'KeyW', s: 'KeyS', a: 'KeyA', d: 'KeyD',
   };
   return map[key] ?? key;
 }
