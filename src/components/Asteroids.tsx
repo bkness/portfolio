@@ -58,7 +58,7 @@ interface Particle {
   maxLife: number;
 }
 interface GS {
-  phase: "title" | "continue" | "play" | "dead" | "over";
+  phase: "title" | "continue" | "play" | "dead" | "over" | "paused";
   ship: Ship;
   rocks: Rock[];
   bullets: Bullet[];
@@ -210,6 +210,7 @@ export default function Asteroids({
   const shownRef = useRef(new Set<number>(loadSave()?.unlocked ?? []));
   const startRef = useRef<(() => void) | null>(null);
   const continueRef = useRef<(() => void) | null>(null);
+  const [paused, setPaused] = useState(false);
   const mouseRef = useRef<{ x: number; y: number; active: boolean }>({
     x: CW / 2,
     y: CH / 2,
@@ -316,6 +317,26 @@ export default function Asteroids({
       if (e.type === "keydown") {
         keys.add(e.code);
         const gs = gsRef.current;
+        if (e.code === "KeyP" || e.code === "Escape") {
+          e.preventDefault();
+          if (gs.phase === "play") {
+            gs.phase = "paused";
+            setPaused(true);
+          } else if (gs.phase === "paused") {
+            gs.phase = "play";
+            setPaused(false);
+          }
+        }
+        if (gs.phase === "paused" && (e.code === "KeyY" || e.code === "Space")) {
+          gs.phase = "play";
+          setPaused(false);
+        }
+        if (gs.phase === "paused" && e.code === "KeyN") {
+          gs.phase = "over";
+          gs.hi = Math.max(gs.hi, gs.score);
+          writeSave(gs.hi, gs.level, [...shownRef.current]);
+          setPaused(false);
+        }
         if (gs.phase === "continue") {
           if (e.code === "Space" || e.code === "Enter") continueGame();
           if (e.code === "KeyN") startGame();
@@ -617,6 +638,21 @@ export default function Asteroids({
         if (Math.floor(Date.now() / 560) % 2 === 0)
           ctx.fillText("[ PRESS SPACE TO PLAY AGAIN ]", CW / 2, CH / 2 + 60);
       }
+
+      if (gs.phase === "paused") {
+        ctx.fillStyle = "rgba(1,10,4,0.82)";
+        ctx.fillRect(0, 0, CW, CH);
+        ctx.textAlign = "center";
+        ctx.shadowColor = COL;
+        ctx.shadowBlur = 20;
+        ctx.fillStyle = COL;
+        ctx.font = "bold 32px monospace";
+        ctx.fillText("PAUSED", CW / 2, CH / 2 - 40);
+        ctx.shadowBlur = 0;
+        ctx.font = "13px monospace";
+        ctx.fillStyle = "#4a7a55";
+        ctx.fillText("CONTINUE PLAYING?", CW / 2, CH / 2 + 10);
+      }
     };
 
     // ── game tick ─────────────────────────────────────────────────────────
@@ -822,12 +858,14 @@ export default function Asteroids({
             >
               <div className="absolute inset-4 rounded-full border border-green/25" />
               <div
-                className="absolute left-1/2 top-1/2 w-11 h-11 -ml-5.5 -mt-5.5 rounded-full border border-green/60 bg-green/10"
+                className="absolute w-11 h-11 rounded-full border border-green/60 bg-green/10"
                 style={{
-                  transform: `translate(${joystickUi.x}px, ${joystickUi.y}px)`,
+                  left: `calc(50% + ${joystickUi.x}px)`,
+                  top: `calc(50% + ${joystickUi.y}px)`,
+                  transform: "translate(-50%, -50%)",
                   transition: joystickUi.active
                     ? "none"
-                    : "transform 110ms ease-out",
+                    : "left 110ms ease-out, top 110ms ease-out",
                 }}
               />
             </div>
@@ -843,6 +881,45 @@ export default function Asteroids({
             FIRE
           </button>
         </div>
+
+        {/* Pause overlay */}
+        {paused && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 pointer-events-auto">
+            <div className="flex flex-col gap-6 items-center">
+              <button
+                onClick={() => {
+                  gsRef.current.phase = "play";
+                  setPaused(false);
+                }}
+                className="font-mono text-xl font-bold px-8 py-3 border-2 border-green text-green bg-green/10 hover:bg-green/20 transition-colors rounded"
+              >
+                CONTINUE
+              </button>
+              <div className="flex gap-8">
+                <button
+                  onClick={() => {
+                    gsRef.current.phase = "play";
+                    setPaused(false);
+                  }}
+                  className="font-mono text-lg font-bold px-6 py-2 border border-green/60 text-green/80 hover:text-green hover:border-green transition-colors"
+                >
+                  YES
+                </button>
+                <button
+                  onClick={() => {
+                    gsRef.current.phase = "over";
+                    gsRef.current.hi = Math.max(gsRef.current.hi, gsRef.current.score);
+                    writeSave(gsRef.current.hi, gsRef.current.level, [...shownRef.current]);
+                    setPaused(false);
+                  }}
+                  className="font-mono text-lg font-bold px-6 py-2 border border-green/60 text-green/80 hover:text-green hover:border-green transition-colors"
+                >
+                  NO
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
