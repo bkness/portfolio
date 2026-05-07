@@ -24,31 +24,31 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="border-t border-[#1a3a22]/50" />
+      <div className="border-t border-border/50" />
 
       <div className="flex justify-center w-full">
         <Projects />
       </div>
 
-      <div className="border-t border-[#1a3a22]/50" />
+      <div className="border-t border-border/50" />
 
       <div className="flex justify-center w-full">
         <Skills />
       </div>
 
-      <div className="border-t border-[#1a3a22]/50" />
+      <div className="border-t border-border/50" />
 
       <div className="flex justify-center w-full">
         <About />
       </div>
 
-      <div className="border-t border-[#1a3a22]/50" />
+      <div className="border-t border-border/50" />
 
       <div className="flex justify-center w-full">
         <Contact />
       </div>
 
-      <div className="border-t border-[#1a3a22]/50" />
+      <div className="border-t border-border/50" />
 
       <div className="flex justify-center w-full">
         <Resume />

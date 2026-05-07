@@ -89,7 +89,6 @@ const COMMANDS: Record<string, () => string[]> = {
     "  clear                Clear terminal",
     "  doom scroll          ...",
     "  slack off            ...",
-    "  wolf                 ...",
   ],
   clear: () => [],
 };
