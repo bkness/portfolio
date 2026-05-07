@@ -1,18 +1,28 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+declare global {
+  interface Window {
+    Dos?: (el: HTMLElement, opts: Record<string, unknown>) => { stop: () => Promise<void> };
+  }
+}
+
+type DosInstance = {
+  stop: () => Promise<void>;
+  sendKeyEvent?: (key: number, pressed: boolean) => void;
+};
 
 export default function Wolfenstein() {
   const containerRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dosRef       = useRef<((el: HTMLElement, opts: Record<string, unknown>) => { stop: () => Promise<void> }) | null>(null);
-  const ciRef        = useRef<{ stop: () => Promise<void> } | null>(null);
-  const skipOverlay  = useRef(false);
+  const ciRef        = useRef<DosInstance | null>(null);
+  const [skipOverlay, setSkipOverlay] = useState(false);
   const [loaded, setLoaded]   = useState(false);
   const [started, setStarted] = useState(false);
   const [loadMsg, setLoadMsg] = useState('loading wolf3d engine...');
-  const held = useRef(new Set<string>());
+  const heldRef = useRef(new Set<string>());
 
   const initGame = () => {
     if (!dosRef.current || !containerRef.current) return;
@@ -21,7 +31,7 @@ export default function Wolfenstein() {
         url: '/wolf3d.jsdos',
         pathPrefix: `${window.location.origin}/emulators/`,
         kiosk: true,
-        mobileControls: false,
+        mobileControls: true,
       });
       setStarted(true);
     } catch (err) {
@@ -31,57 +41,92 @@ export default function Wolfenstein() {
 
   const handleScriptLoad = () => {
     setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const D = (window as any).Dos;
+      const D = window.Dos;
       if (typeof D === 'function') {
         dosRef.current = D;
-        skipOverlay.current ? initGame() : setLoaded(true);
+        if (skipOverlay) initGame();
+        else setLoaded(true);
       } else {
         setLoadMsg('failed to load engine — try refreshing');
       }
     }, 50);
   };
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const D = (window as any).Dos;
-    if (typeof D === 'function') {
-      dosRef.current = D;
-      setLoaded(true);
+  useEffect(() => () => { ciRef.current?.stop(); }, []);
+
+
+  const handleImpatientClick = useCallback(() => {
+    if (skipOverlay) return;
+    setSkipOverlay(true);
+  }, [skipOverlay]);
+
+  const dispatchKey = useCallback((type: 'keydown' | 'keyup', key: string) => {
+    const code = keyCode2code(key);
+    const codeNum = keyCode(key);
+
+    if (ciRef.current?.sendKeyEvent) {
+      ciRef.current.sendKeyEvent(codeNum, type === 'keydown');
+      return;
     }
+
+    const event = new KeyboardEvent(type, {
+      key,
+      code,
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(event, 'keyCode', { get: () => codeNum });
+    Object.defineProperty(event, 'which', { get: () => codeNum });
+    Object.defineProperty(event, 'charCode', { get: () => 0 });
+
+    containerRef.current?.dispatchEvent(event);
+    document.dispatchEvent(event);
+    window.dispatchEvent(event);
   }, []);
 
-  useEffect(() => () => { ciRef.current?.stop(); }, []);
+  const press = useCallback((key: string) => {
+    if (heldRef.current.has(key)) return;
+    heldRef.current.add(key);
+    dispatchKey('keydown', key);
+  }, [dispatchKey]);
+
+  const release = useCallback((key: string) => {
+    if (!heldRef.current.has(key)) return;
+    heldRef.current.delete(key);
+    dispatchKey('keyup', key);
+  }, [dispatchKey]);
 
   useEffect(() => {
     if (!started) return;
-    const style = document.createElement('style');
-    style.textContent = '.nipple, .emulator-button, .emulator-options, .emulator-control-select { display: none !important; }';
-    document.head.appendChild(style);
-    return () => style.remove();
-  }, [started]);
+    const releaseAll = () => {
+      for (const key of heldRef.current) {
+        dispatchKey('keyup', key);
+      }
+      heldRef.current.clear();
+    };
+    window.addEventListener('touchend', releaseAll, { passive: true });
+    window.addEventListener('blur', releaseAll);
+    return () => {
+      window.removeEventListener('touchend', releaseAll);
+      window.removeEventListener('blur', releaseAll);
+      releaseAll();
+    };
+  }, [dispatchKey, started]);
 
-  const handleImpatientClick = () => {
-    if (skipOverlay.current) return;
-    skipOverlay.current = true;
-  };
-
-  const press = (key: string) => {
-    if (held.current.has(key)) return;
-    held.current.add(key);
-    window.dispatchEvent(new KeyboardEvent('keydown', { key, code: keyCode2code(key), keyCode: keyCode(key), bubbles: true }));
-  };
-
-  const release = (key: string) => {
-    held.current.delete(key);
-    window.dispatchEvent(new KeyboardEvent('keyup', { key, code: keyCode2code(key), keyCode: keyCode(key), bubbles: true }));
-  };
-
-  const btn = (key: string) => ({
-    onTouchStart: (e: React.TouchEvent) => { e.preventDefault(); press(key); },
-    onTouchEnd:   (e: React.TouchEvent) => { e.preventDefault(); release(key); },
-    onTouchCancel:(e: React.TouchEvent) => { e.preventDefault(); release(key); },
-  });
+  const btn = useCallback((key: string) => ({
+    onTouchStart: (e: React.TouchEvent) => {
+      e.preventDefault();
+      press(key);
+    },
+    onTouchEnd: (e: React.TouchEvent) => {
+      e.preventDefault();
+      release(key);
+    },
+    onTouchCancel: (e: React.TouchEvent) => {
+      e.preventDefault();
+      release(key);
+    },
+  }), [press, release]);
 
   const btnCls = 'bg-zinc-800/70 border border-zinc-500/40 text-white font-mono text-xs font-bold touch-none rounded';
 
@@ -98,7 +143,7 @@ export default function Wolfenstein() {
         >
           <div className="text-center space-y-2">
             <p className="text-[#c8a000] font-mono text-sm animate-pulse">{loadMsg}</p>
-            {!skipOverlay.current && (
+            {!skipOverlay && (
               <p className="text-zinc-600 font-mono text-xs">first load may take 10–20 seconds</p>
             )}
           </div>
