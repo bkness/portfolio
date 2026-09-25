@@ -7,7 +7,7 @@ type Phase = 'idle' | 'downloading' | '404' | 'jk' | 'success';
 const RESUME_LINES = [
   '# brandon michael kelly',
   '  cottonwood, az 86326  ·  928-274-6725',
-  '  kbrandon863@gmail.com  ·  weballtech.com',
+  '  kbrandon863@gmail.com  ·  brandonkelly.vercel.app',
   '  linkedin  ·  github.com/bkness',
   '',
   '────────────────────────────────────────────────',

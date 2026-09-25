@@ -1,8 +1,8 @@
-# weballtech.com
+# Brandon Kelly — Portfolio
 
 Personal portfolio for Brandon Kelly — built as an interactive terminal interface.
 
-**Live:** [weballtech.com](https://www.weballtech.com)
+**Live:** [brandonkelly.vercel.app](https://brandonkelly.vercel.app)
 
 ## Stack
 
@@ -39,4 +39,4 @@ npm run build
 
 ## Contact
 
-[kbrandon863@gmail.com](mailto:kbrandon863@gmail.com) · [github.com/bkness](https://github.com/bkness) · [weballtech.com](https://www.weballtech.com)
+[kbrandon863@gmail.com](mailto:kbrandon863@gmail.com) · [github.com/bkness](https://github.com/bkness) · [brandonkelly.vercel.app](https://brandonkelly.vercel.app)
