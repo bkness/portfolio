@@ -21,7 +21,7 @@ export const TERMINAL_PROJECTS: ProjectData[] = [
   {
     id: 2,
     name: 'game-hub',
-    liveUrl: 'https://video-gaming-hub.onrender.com/',
+    liveUrl: 'https://game-hub-bkness.vercel.app',
     localPort: '3001',
     tags: ['GraphQL', 'React', 'MongoDB', 'JWT'],
     description: 'Full stack game tracker with GraphQL API and JWT auth',
@@ -39,7 +39,7 @@ export const TERMINAL_PROJECTS: ProjectData[] = [
   {
     id: 4,
     name: 'breweries',
-    liveUrl: 'https://brewery-search.onrender.com',
+    liveUrl: 'https://breweries-bkness.vercel.app',
     localPort: '3002',
     tags: ['Node.js', 'SQLite', 'Sequelize', 'Handlebars'],
     description: 'Brewery finder with full search',
