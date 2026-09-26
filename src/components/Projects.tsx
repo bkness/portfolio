@@ -58,6 +58,15 @@ const PROJECTS = [
     demo: null,
     demoLabel: null,
   },
+  {
+    number: '07',
+    name: 'kanban',
+    description: 'Drag-and-drop Kanban board with card editing, labels, and due dates. Normalized Zustand state saved in the browser, with Playwright end-to-end tests in CI.',
+    tags: ['React', 'TypeScript', 'Zustand', 'dnd-kit', 'Playwright'],
+    github: 'https://github.com/bkness/kanban',
+    demo: 'https://kanban-kappa-cyan.vercel.app',
+    demoLabel: 'live',
+  },
 ];
 
 export default function Projects() {
