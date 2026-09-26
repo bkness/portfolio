@@ -25,11 +25,11 @@ const PROJECTS = [
   {
     number: '03',
     name: 'nightowlz',
-    description: 'iOS nightlife discovery app built with React Native and Expo. JWT auth, MongoDB backend, real-time venue data.',
-    tags: ['React Native', 'Expo', 'MongoDB', 'JWT', 'iOS'],
+    description: 'Nightlife discovery app built with React Native and Expo — one codebase for iOS and the web. Swipe to save bars, Apple Maps search, JWT auth, MongoDB backend, and an owner dashboard for events.',
+    tags: ['React Native', 'Expo', 'MongoDB', 'MapKit', 'iOS + Web'],
     github: 'https://github.com/bkness/nightowlz',
-    demo: null,
-    demoLabel: null,
+    demo: 'https://nightowlz.vercel.app',
+    demoLabel: 'live',
   },
   {
     number: '04',
