@@ -19,8 +19,8 @@ const PROJECTS = [
     description: 'Full stack game tracker with GraphQL API, JWT auth, and full CRUD. Conditional rendering based on auth state throughout.',
     tags: ['GraphQL', 'React', 'Node.js', 'MongoDB', 'JWT'],
     github: 'https://github.com/bkness/game-hub',
-    demo: null,
-    demoLabel: null,
+    demo: 'https://game-hub-bkness.vercel.app',
+    demoLabel: 'live',
   },
   {
     number: '03',
