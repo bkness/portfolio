@@ -42,12 +42,12 @@ const PROJECTS = [
   },
   {
     number: '05',
-    name: 'devlog',
-    description: 'Full CRUD developer journal with session-based auth, MySQL persistence, and Handlebars templating.',
-    tags: ['Node.js', 'MySQL', 'Express', 'Handlebars', 'Auth'],
-    github: 'https://github.com/bkness/devlog',
-    demo: null,
-    demoLabel: null,
+    name: 'devlogger',
+    description: 'Developer log for notes, progress, and breakthroughs — per-user auth with rate limiting, a tag system with click-to-filter, weekly stats, and a layered theme engine.',
+    tags: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL', 'NextAuth'],
+    github: 'https://github.com/bkness/devlogger',
+    demo: 'https://devlogger.onrender.com',
+    demoLabel: 'live',
   },
   {
     number: '06',
