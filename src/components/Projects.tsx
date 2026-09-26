@@ -37,7 +37,7 @@ const PROJECTS = [
     description: 'Brewery finder rebuilt from the ground up — migrated from MySQL/Heroku to SQLite/Render. Covers the full migration story from legacy stack to modern deploy.',
     tags: ['Node.js', 'SQLite', 'Sequelize', 'MySQL', 'Render'],
     github: 'https://github.com/bkness/breweries',
-    demo: 'https://breweries.onrender.com',
+    demo: 'https://brewery-search.onrender.com',
     demoLabel: 'live',
   },
   {
