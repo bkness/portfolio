@@ -18,7 +18,8 @@
   h1 { font-size: 17pt; font-weight: bold; color: #666; margin: 0 0 2pt; }
   h2 {
     font-size: 11pt; font-weight: bold; color: #666;
-    margin: 16pt 0 4pt; text-transform: uppercase;
+    margin: 12pt 0 4pt; text-transform: uppercase;
+    break-after: avoid;
   }
   p { margin: 0; }
   .project, .job { margin-top: 1pt; break-inside: avoid; }
@@ -43,11 +44,11 @@ strong communication, problem-solving, and leadership instincts to every team.</
 
 <h2>Technical Skills</h2>
 <p><b>Languages:</b> JavaScript, TypeScript, HTML5, CSS3, Python</p>
-<p><b>Frontend:</b> React, Next.js, React Native, Expo, Tailwind CSS, Bootstrap, Redux, Handlebars.js</p>
+<p><b>Frontend:</b> React, Next.js, React Native, Expo, Tailwind CSS, Zustand, Redux, Bootstrap, Handlebars.js</p>
 <p><b>Backend:</b> Node.js, Express.js, GraphQL, REST APIs</p>
 <p><b>Databases:</b> PostgreSQL, Prisma, MongoDB, MySQL, SQLite, Sequelize, Mongoose</p>
 <p><b>Tools &amp; Platforms:</b> Git, GitHub, Vercel, Render, Railway, Firebase, VS Code, Apollo Studio</p>
-<p><b>Other:</b> JWT, bcrypt, Apollo, Agile, npm publishing, CLI development, GitHub Actions</p>
+<p><b>Other:</b> JWT, bcrypt, Apollo, Agile, npm publishing, CLI development, GitHub Actions, Playwright</p>
 
 <h2>Projects</h2>
 
@@ -58,6 +59,16 @@ strong communication, problem-solving, and leadership instincts to every team.</
     <li>Published CLI tool with 1.3k+ downloads featuring an interactive security scanner, password generator, and README builder</li>
     <li>Built typosquatting detection and tarball integrity validation to flag dangerous installs against trusted publisher registries</li>
     <li>Implemented shell integration layer with single-keybind GitHub workflow (issue &gt; branch &gt; commit &gt; PR), fuzzy command palette, and auto-activating Python/Node environment detection</li>
+  </ul>
+</div>
+
+<div class="project">
+  <p class="title"><b>Kanban</b> | <a href="https://github.com/bkness/kanban">github.com/bkness/kanban</a> | <a href="https://kanban-bkness.vercel.app">kanban-bkness.vercel.app</a></p>
+  <p class="stack">React, TypeScript, Zustand, Vercel Functions, PostgreSQL (Neon), Playwright</p>
+  <ul>
+    <li>Drag-and-drop board with optional accounts and cloud sync; saves carry a version number, so a stale save loads the newer board instead of overwriting it</li>
+    <li>Serverless auth API: bcrypt passwords, session tokens stored only as SHA-256 hashes, Postgres-backed rate limiting</li>
+    <li>Search, label filters, keyboard shortcuts, collapsible lanes; 36 Playwright end-to-end tests in CI</li>
   </ul>
 </div>
 

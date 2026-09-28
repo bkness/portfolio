@@ -30,10 +30,10 @@ export const TERMINAL_PROJECTS: ProjectData[] = [
   {
     id: 3,
     name: 'nightowlz',
-    liveUrl: null,
+    liveUrl: 'https://nightowlz.vercel.app',
     localPort: '8081',
-    tags: ['React Native', 'Expo', 'MongoDB', 'iOS'],
-    description: 'iOS nightlife discovery app',
+    tags: ['React Native', 'Expo', 'MongoDB', 'iOS + Web'],
+    description: 'Nightlife discovery app for iOS and the web',
     github: 'https://github.com/bkness/nightowlz',
   },
   {
@@ -41,7 +41,7 @@ export const TERMINAL_PROJECTS: ProjectData[] = [
     name: 'breweries',
     liveUrl: 'https://breweries-bkness.vercel.app',
     localPort: '3002',
-    tags: ['Node.js', 'SQLite', 'Sequelize', 'Handlebars'],
+    tags: ['Node.js', 'PostgreSQL', 'Sequelize', 'Handlebars'],
     description: 'Brewery finder with full search',
     github: 'https://github.com/bkness/breweries',
   },

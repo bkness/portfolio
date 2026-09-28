@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+// Order = what a visitor sees first: desktop shows 4 cards before
+// "show more", phones 3. Strongest, most current work leads.
 const PROJECTS = [
   {
     number: '01',
@@ -15,11 +17,11 @@ const PROJECTS = [
   },
   {
     number: '02',
-    name: 'game-hub',
-    description: 'Full stack game tracker with GraphQL API, JWT auth, and full CRUD. Conditional rendering based on auth state throughout.',
-    tags: ['GraphQL', 'React', 'Node.js', 'MongoDB', 'JWT'],
-    github: 'https://github.com/bkness/game-hub',
-    demo: 'https://game-hub-bkness.vercel.app',
+    name: 'kanban',
+    description: 'Drag-and-drop Kanban board with optional accounts and cloud sync — boards save to Postgres with version checks, so two devices never silently overwrite each other. Search, label filters, keyboard shortcuts, and collapsible lanes; 36 Playwright tests in CI.',
+    tags: ['React', 'TypeScript', 'Zustand', 'Postgres', 'Playwright'],
+    github: 'https://github.com/bkness/kanban',
+    demo: 'https://kanban-bkness.vercel.app',
     demoLabel: 'live',
   },
   {
@@ -33,15 +35,6 @@ const PROJECTS = [
   },
   {
     number: '04',
-    name: 'breweries',
-    description: 'Brewery finder rebuilt from the ground up — migrated from MySQL/Heroku to SQLite/Render. Covers the full migration story from legacy stack to modern deploy.',
-    tags: ['Node.js', 'SQLite', 'Sequelize', 'MySQL', 'Render'],
-    github: 'https://github.com/bkness/breweries',
-    demo: 'https://breweries-bkness.vercel.app',
-    demoLabel: 'live',
-  },
-  {
-    number: '05',
     name: 'devlogger',
     description: 'Developer log for notes, progress, and breakthroughs — per-user auth with rate limiting, a tag system with click-to-filter, weekly stats, and a layered theme engine.',
     tags: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL', 'NextAuth'],
@@ -50,7 +43,7 @@ const PROJECTS = [
     demoLabel: 'live',
   },
   {
-    number: '06',
+    number: '05',
     name: 'dotfiles',
     description: 'Terminal-first dev environment — custom zsh shell with hooks, plugin registry, GitHub workflow automation, and forged-cli integration.',
     tags: ['zsh', 'Shell', 'Automation', 'CLI', 'DevOps'],
@@ -59,12 +52,21 @@ const PROJECTS = [
     demoLabel: null,
   },
   {
+    number: '06',
+    name: 'breweries',
+    description: 'Brewery finder rebuilt from a bootcamp group project — Express and Handlebars on Postgres (Supabase), with user accounts, saved favorites, and search across the Open Brewery DB.',
+    tags: ['Node.js', 'Express', 'PostgreSQL', 'Sequelize', 'Handlebars'],
+    github: 'https://github.com/bkness/breweries',
+    demo: 'https://breweries-bkness.vercel.app',
+    demoLabel: 'live',
+  },
+  {
     number: '07',
-    name: 'kanban',
-    description: 'Drag-and-drop Kanban board with card editing, labels, and due dates. Normalized Zustand state saved in the browser, with Playwright end-to-end tests in CI.',
-    tags: ['React', 'TypeScript', 'Zustand', 'dnd-kit', 'Playwright'],
-    github: 'https://github.com/bkness/kanban',
-    demo: 'https://kanban-bkness.vercel.app',
+    name: 'game-hub',
+    description: 'Full stack game tracker with GraphQL API, JWT auth, and full CRUD. Conditional rendering based on auth state throughout.',
+    tags: ['GraphQL', 'React', 'Node.js', 'MongoDB', 'JWT'],
+    github: 'https://github.com/bkness/game-hub',
+    demo: 'https://game-hub-bkness.vercel.app',
     demoLabel: 'live',
   },
 ];
