@@ -29,6 +29,9 @@ export default function Doom() {
         url: '/doom.jsdos',
         pathPrefix: `${window.location.origin}/emulators/`,
         kiosk: true,
+        // Our tap on RUN DOOM is the user gesture audio needs, so skip
+        // js-dos's own ▶ screen (it rendered unstyled and needed a 2nd tap)
+        autoStart: true,
         mobileControls: false,
       });
       setStarted(true);
@@ -67,7 +70,13 @@ export default function Doom() {
   useEffect(() => {
     if (!started) return;
     const style = document.createElement('style');
-    style.textContent = '.nipple, .emulator-button, .emulator-options, .emulator-control-select { display: none !important; }';
+    style.textContent = [
+      '.nipple, .emulator-button, .emulator-options, .emulator-control-select { display: none !important; }',
+      // The bundle sets autolock=true, so js-dos covers the game with "Click to
+      // capture mouse / Use Esc / slider" — meaningless on a touch screen.
+      // Touch only: desktop players still get the mouse-capture prompt.
+      '@media (hover: none) and (pointer: coarse) { .doom-root .pointer-events-none:has(.text-4xl) { display: none !important; } }',
+    ].join('\n');
     document.head.appendChild(style);
     return () => style.remove();
   }, [started]);
@@ -107,7 +116,7 @@ export default function Doom() {
       <Script src="/js-dos.js" onLoad={handleScriptLoad} />
 
       {/* js-dos mounts here */}
-      <div ref={containerRef} className="w-full h-full" />
+      <div ref={containerRef} className="doom-root w-full h-full" />
 
       {/* Loading state */}
       {!loaded && !started && (
