@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored, minified third-party bundles (js-dos emulator for DOOM/Wolf3D)
+    "public/**",
   ]),
 ]);
 

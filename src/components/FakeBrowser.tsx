@@ -468,7 +468,8 @@ type Props = {
 };
 
 export default function FakeBrowser({ projectId, onClose }: Props) {
-  const [loaded, setLoaded] = useState(false);
+  // Which project's loading delay has finished; switching projects resets `loaded` for free
+  const [loadedFor, setLoadedFor] = useState<number | null>(null);
 
   const isGame     = projectId === 0;
   const isDoom     = projectId === -1;
@@ -481,14 +482,12 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
     : undefined;
   const Preview = !isSpecial && projectId ? PREVIEWS[projectId] : null;
 
+  const loaded = projectId !== null && loadedFor === projectId;
+
   useEffect(() => {
-    if (projectId !== null) {
-      setLoaded(false);
-      const t = setTimeout(() => setLoaded(true), isSpecial ? 200 : 500);
-      return () => clearTimeout(t);
-    } else {
-      setLoaded(false);
-    }
+    if (projectId === null) return;
+    const t = setTimeout(() => setLoadedFor(projectId), isSpecial ? 200 : 500);
+    return () => clearTimeout(t);
   }, [projectId, isSpecial]);
 
   useEffect(() => {
