@@ -45,4 +45,22 @@ export const TERMINAL_PROJECTS: ProjectData[] = [
     description: 'Brewery finder with full search',
     github: 'https://github.com/bkness/breweries',
   },
+  {
+    id: 5,
+    name: 'kanban',
+    liveUrl: 'https://kanban-bkness.vercel.app',
+    localPort: '5173',
+    tags: ['React', 'TypeScript', 'Zustand', 'Postgres', 'Playwright'],
+    description: 'Drag-and-drop board with accounts and cloud sync',
+    github: 'https://github.com/bkness/kanban',
+  },
+  {
+    id: 6,
+    name: 'devlogger',
+    liveUrl: 'https://devlogger-bkness.vercel.app',
+    localPort: '3003',
+    tags: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL', 'NextAuth'],
+    description: 'Developer log with auth, tags, stats, and themes',
+    github: 'https://github.com/bkness/devlogger',
+  },
 ];
