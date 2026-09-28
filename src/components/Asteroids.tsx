@@ -327,7 +327,10 @@ export default function Asteroids({
             setPaused(false);
           }
         }
-        if (gs.phase === "paused" && (e.code === "KeyY" || e.code === "Space")) {
+        if (
+          gs.phase === "paused" &&
+          (e.code === "KeyY" || e.code === "Space")
+        ) {
           gs.phase = "play";
           setPaused(false);
         }
@@ -655,8 +658,8 @@ export default function Asteroids({
       }
     };
 
-    // ── game tick ─────────────────────────────────────────────────────────
-    const tick = () => {
+    // ── game step (one 60Hz update) ───────────────────────────────────────
+    const step = () => {
       const gs = gsRef.current;
       const s = gs.ship;
 
@@ -808,8 +811,23 @@ export default function Asteroids({
           gs.bullets = [];
         }
       }
+    };
 
-      draw(gs);
+    // ── game tick ─────────────────────────────────────────────────────────
+    // Physics is tuned per 60Hz frame. rAF fires at the display's refresh
+    // rate (120Hz on ProMotion), so run fixed 60Hz steps and draw once.
+    const STEP_MS = 1000 / 60;
+    let last = performance.now();
+    let acc = 0;
+    const tick = (now: number) => {
+      // Cap the catch-up so a backgrounded tab doesn't fast-forward the game
+      acc += Math.min(now - last, 250);
+      last = now;
+      while (acc >= STEP_MS) {
+        step();
+        acc -= STEP_MS;
+      }
+      draw(gsRef.current);
       frameRef.current = requestAnimationFrame(tick);
     };
 
@@ -908,8 +926,13 @@ export default function Asteroids({
                 <button
                   onClick={() => {
                     gsRef.current.phase = "over";
-                    gsRef.current.hi = Math.max(gsRef.current.hi, gsRef.current.score);
-                    writeSave(gsRef.current.hi, gsRef.current.level, [...shownRef.current]);
+                    gsRef.current.hi = Math.max(
+                      gsRef.current.hi,
+                      gsRef.current.score,
+                    );
+                    writeSave(gsRef.current.hi, gsRef.current.level, [
+                      ...shownRef.current,
+                    ]);
                     setPaused(false);
                   }}
                   className="font-mono text-lg font-bold px-6 py-2 border border-green/60 text-green/80 hover:text-green hover:border-green transition-colors"

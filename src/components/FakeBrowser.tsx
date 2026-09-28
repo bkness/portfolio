@@ -201,8 +201,8 @@ function NightOwlzPreview() {
           <div className="text-gray-400">React Native · Expo</div>
           <div>MongoDB backend</div>
           <div>JWT authentication</div>
-          <div>iOS nightlife discovery</div>
-          <div>Published to App Store</div>
+          <div>iOS + web from one codebase</div>
+          <div>Live on the web · TestFlight in progress</div>
         </div>
         <div className="mt-5 flex flex-col gap-2 items-center md:items-start">
           {[
@@ -269,9 +269,180 @@ function BreweriesPreview() {
           <div className="text-[#d4a054] font-bold mb-2">Stack</div>
           <div className="text-[#7a5030] space-y-0.5">
             <div>Node.js · Express · Sequelize</div>
-            <div>SQLite (migrated from MySQL/Heroku)</div>
-            <div>Handlebars templating · Deployed on Render</div>
+            <div>PostgreSQL (Supabase) · rebuilt from a group project</div>
+            <div>Handlebars templating · Deployed on Vercel</div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Mirrors the real app: dark lanes with a thin accent, cards as the only
+// solid objects, dot labels in mono. Content is the live starter board.
+const KANBAN_LANES = [
+  { title: 'Up next', accent: '#FBBF24', cards: [
+    { title: 'Beginner setup walkthrough for forged init', labels: [['web', '#4F8EFF']], due: 'due oct 12' },
+    { title: 'Auto-verify flagged npm publishers', labels: [['security', '#FB7185'], ['backend', '#A78BFA']] },
+    { title: 'Sync this board to an account', labels: [['backend', '#A78BFA']] },
+  ] },
+  { title: 'In progress', accent: '#4F8EFF', cards: [
+    { title: 'Kanban design pass', labels: [['web', '#4F8EFF']], due: 'due oct 1' },
+    { title: 'Resume link refresh', labels: [['docs', '#FBBF24']], due: 'due sep 30', soon: true },
+  ] },
+  { title: 'Shipped', accent: '#34D399', done: true, cards: [
+    { title: 'Night Owlz in the browser', labels: [['web', '#4F8EFF']] },
+    { title: 'One-click demo accounts', labels: [['backend', '#A78BFA']] },
+    { title: 'forged 0.4: known-malware lookup', labels: [['security', '#FB7185']] },
+  ] },
+] as { title: string; accent: string; done?: boolean; cards: { title: string; labels: string[][]; due?: string; soon?: boolean }[] }[];
+
+function KanbanPreview() {
+  return (
+    // Sans like the real app; labels, stats and dates stay mono (font-mono)
+    <div className="h-full bg-[#0C0C10] text-[#EEEEF5] overflow-auto flex flex-col"
+      style={{ fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" }}>
+      <nav className="h-12 shrink-0 px-5 flex items-center justify-between border-b border-[#2A2A3A] bg-[#13131A]/85">
+        <div className="flex items-center gap-2 text-sm font-bold">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#4F8EFF] to-[#A78BFA] flex items-center justify-center text-[11px]">⊞</div>
+          Kanban
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="hidden sm:flex items-center gap-1.5 px-2.5 h-7 rounded-md border border-[#2A2A3A] text-[#8888A8]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" /> sam@example.com
+          </span>
+          <span className="px-3 h-7 flex items-center rounded-md bg-[#4F8EFF] text-white font-semibold">+ New card</span>
+        </div>
+      </nav>
+
+      <div className="px-5 pt-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="text-[10px] font-semibold tracking-[0.1em] text-[#4F8EFF]">PORTFOLIO</div>
+          <div className="text-lg font-bold tracking-tight">Launch board</div>
+          <div className="mt-1 font-mono text-[11px] text-[#55556A]">
+            <span className="text-[#8888A8]">8</span> cards <span className="mx-2 text-[#38384C]">·</span>
+            <span className="text-[#8888A8]">0</span> overdue <span className="mx-2 text-[#38384C]">·</span>
+            <span className="text-[#8888A8]">3</span> done
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-40 px-2.5 py-1.5 rounded-md border border-[#2A2A3A] bg-[#1A1A24] text-[11px] text-[#55556A] flex justify-between">
+            Search cards… <span className="font-mono border border-[#38384C] rounded px-1 text-[10px]">/</span>
+          </div>
+          {[['Web', '#4F8EFF'], ['Backend', '#A78BFA'], ['Security', '#FB7185']].map(([t, c]) => (
+            <span key={t} className="hidden md:inline text-[10px] font-semibold px-2 py-0.5 rounded-full border" style={{ color: c, borderColor: c + '59' }}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 min-h-0 flex gap-2.5 px-5 pt-3 pb-4 overflow-x-auto">
+        {KANBAN_LANES.map(lane => (
+          <div key={lane.title} className="flex-1 min-w-[200px] max-w-[300px] flex flex-col">
+            <div className="h-0.5 rounded opacity-85" style={{ background: lane.accent }} />
+            <div className="flex items-center justify-between px-1 pt-3 pb-2">
+              <span className="text-[13px] font-semibold">{lane.title}</span>
+              <span className="font-mono text-[11px] text-[#55556A]">{lane.cards.length}</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              {lane.cards.map(card => (
+                <div key={card.title} className={`rounded-md bg-[#13131A] p-3 shadow-[0_2px_8px_rgba(0,0,0,0.3)] ${lane.done ? 'opacity-75' : ''}`}>
+                  <div className="flex flex-wrap gap-3 mb-1.5">
+                    {card.labels.map(([t, c]) => (
+                      <span key={t} className="flex items-center gap-1.5 font-mono text-[10px] text-[#8888A8]">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: c, boxShadow: `0 0 6px ${c}` }} />{t}
+                      </span>
+                    ))}
+                  </div>
+                  <div className={`text-[12px] font-medium leading-snug ${lane.done ? 'text-[#8888A8]' : ''}`}>{card.title}</div>
+                  {card.due && <div className={`mt-2 font-mono text-[10px] ${card.soon ? 'text-[#FBBF24]' : 'text-[#55556A]'}`}>{card.due}</div>}
+                </div>
+              ))}
+              <div className="px-2 py-1 text-[11px] text-[#55556A]">＋ Add card</div>
+            </div>
+          </div>
+        ))}
+        {/* a collapsed lane, like the real board's rails */}
+        <div className="w-8 shrink-0 mt-2 rounded-md bg-[#13131A]/60 flex flex-col items-center gap-2 py-3 text-[#8888A8]">
+          <span className="font-mono text-[10px] text-[#55556A]">6</span>
+          <span className="text-[12px] font-semibold [writing-mode:vertical-rl]">Ideas</span>
+        </div>
+      </div>
+
+      <div className="shrink-0 border-t border-[#2A2A3A] px-5 py-2 font-mono text-[10px] text-[#55556A] flex flex-wrap gap-x-4 gap-y-1">
+        <span>React · TypeScript · Zustand · dnd-kit</span>
+        <span>Vercel Functions · Postgres (Neon)</span>
+        <span>versioned sync · 36 Playwright tests</span>
+      </div>
+    </div>
+  );
+}
+
+// Mirrors devlogger's "cyber" theme. Entries are real work from this week.
+const DEVLOGS = [
+  { title: 'Moved devlogger from Render to Vercel', body: 'No more 50s cold start. Functions in pdx1, next to the Neon database.', tags: ['deploy', 'vercel'], when: '2d ago' },
+  { title: 'Fixed the missing Log.tags migration', body: 'Tags were added with db push, so prod never got the column. Always migrate dev.', tags: ['prisma', 'bugfix'], when: '3d ago' },
+  { title: 'One-click demo account', body: '"// try the demo" signs in with seeded sample logs, no sign-up needed.', tags: ['auth', 'ux'], when: '3d ago' },
+];
+
+function DevloggerPreview() {
+  return (
+    <div
+      className="h-full text-[rgba(200,240,255,0.85)] overflow-auto font-mono"
+      style={{
+        background: '#040a10',
+        backgroundImage: 'linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px)',
+        backgroundSize: '28px 28px',
+      }}
+    >
+      <nav className="h-12 px-5 flex items-center justify-between border-b border-[rgba(0,229,255,0.15)] bg-[#071018]/90">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 border border-[#00e5ff] text-[#00e5ff] text-[10px] font-bold flex items-center justify-center shadow-[0_0_10px_rgba(0,229,255,0.3)]">DL</div>
+          <span className="text-xs font-bold tracking-[0.2em] text-[#00e5ff]">DEVLOGGER</span>
+        </div>
+        <div className="flex items-center gap-4 text-[10px] tracking-widest text-[rgba(200,240,255,0.35)]">
+          <span className="text-[#00e5ff]">LOGS</span>
+          <span className="hidden sm:inline">STATS</span>
+          <span className="px-2.5 py-1 border border-[rgba(0,255,136,0.4)] bg-[rgba(0,255,136,0.13)] text-[#00ff88]">+ NEW LOG</span>
+        </div>
+      </nav>
+
+      <div className="max-w-2xl mx-auto p-5">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="flex-1 min-w-[180px] px-3 py-2 border border-[rgba(0,229,255,0.15)] bg-[#050d14] text-[11px] text-[rgba(200,240,255,0.35)]">
+            search logs...
+          </div>
+          <div className="px-3 py-2 border border-[rgba(0,229,255,0.15)] bg-[#050d14] text-[11px]">newest ▾</div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mb-5">
+          {[['34', 'logs'], ['6', 'weeks'], ['3', 'themes']].map(([n, l]) => (
+            <div key={l} className="border border-[rgba(0,229,255,0.15)] bg-[rgba(0,229,255,0.06)] px-3 py-2.5">
+              <div className="text-lg font-bold text-[#00e5ff]">{n}</div>
+              <div className="text-[9px] tracking-widest uppercase text-[rgba(200,240,255,0.35)]">{l}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-2.5">
+          {DEVLOGS.map(log => (
+            <div key={log.title} className="border border-[rgba(0,229,255,0.15)] bg-[rgba(0,229,255,0.06)] p-4 hover:border-[rgba(0,229,255,0.35)] transition-colors">
+              <div className="flex items-start justify-between gap-3">
+                <div className="text-[13px] font-bold text-[#00e5ff]">{log.title}</div>
+                <div className="text-[10px] text-[rgba(200,240,255,0.35)] shrink-0">{log.when}</div>
+              </div>
+              <div className="text-[11px] leading-5 mt-1.5">{log.body}</div>
+              <div className="flex gap-1.5 mt-2.5">
+                {log.tags.map(t => (
+                  <span key={t} className="text-[9px] px-1.5 py-0.5 border border-[rgba(0,255,136,0.4)] text-[#00ff88]">#{t}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-5 text-[10px] text-[rgba(200,240,255,0.35)] leading-5">
+          Next.js 16 · Prisma 7 · Postgres (Neon) · NextAuth<br />
+          3 themes × 3 navbars × 3 toasts · rate-limited auth · one-click demo
         </div>
       </div>
     </div>
@@ -285,6 +456,8 @@ const PREVIEWS: Record<number, () => React.JSX.Element> = {
   2: GameHubPreview,
   3: NightOwlzPreview,
   4: BreweriesPreview,
+  5: KanbanPreview,
+  6: DevloggerPreview,
 };
 
 // ── Main component ──────────────────────────────────────────────────────────
@@ -295,7 +468,8 @@ type Props = {
 };
 
 export default function FakeBrowser({ projectId, onClose }: Props) {
-  const [loaded, setLoaded] = useState(false);
+  // Which project's loading delay has finished; switching projects resets `loaded` for free
+  const [loadedFor, setLoadedFor] = useState<number | null>(null);
 
   const isGame     = projectId === 0;
   const isDoom     = projectId === -1;
@@ -308,14 +482,12 @@ export default function FakeBrowser({ projectId, onClose }: Props) {
     : undefined;
   const Preview = !isSpecial && projectId ? PREVIEWS[projectId] : null;
 
+  const loaded = projectId !== null && loadedFor === projectId;
+
   useEffect(() => {
-    if (projectId !== null) {
-      setLoaded(false);
-      const t = setTimeout(() => setLoaded(true), isSpecial ? 200 : 500);
-      return () => clearTimeout(t);
-    } else {
-      setLoaded(false);
-    }
+    if (projectId === null) return;
+    const t = setTimeout(() => setLoadedFor(projectId), isSpecial ? 200 : 500);
+    return () => clearTimeout(t);
   }, [projectId, isSpecial]);
 
   useEffect(() => {

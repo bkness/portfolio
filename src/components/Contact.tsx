@@ -190,7 +190,7 @@ export default function Contact() {
         {phase === 'jk' && (
           <div className="mt-4 border border-[#00ff41]/40 rounded p-4 bg-[#00ff41]/5 space-y-1">
             <div className="text-[#00ff41] font-bold">jk 😂</div>
-            <div className="text-[#c8ffd4]">How's it feel to be a dev for a day?</div>
+            <div className="text-[#c8ffd4]">How&apos;s it feel to be a dev for a day?</div>
             <div className="text-[#4a7a55]">loading actual contact info...</div>
           </div>
         )}

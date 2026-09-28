@@ -28,17 +28,18 @@ export default function About() {
   }, []);
 
   useEffect(() => {
-    if (animate) {
-      let i = 0;
-      const interval = setInterval(() => {
-        i++;
-        setVisible(i);
-        if (i >= COMMITS.length) clearInterval(interval);
-      }, 120);
-      return () => clearInterval(interval);
-    } else {
+    if (!animate) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setVisible(i);
+      if (i >= COMMITS.length) clearInterval(interval);
+    }, 120);
+    // Reset when scrolled away, so the log replays next time it's in view
+    return () => {
+      clearInterval(interval);
       setVisible(0);
-    }
+    };
   }, [animate]);
 
   return (
@@ -101,12 +102,12 @@ export default function About() {
           <div className="text-[#4a7a55] text-xs mb-3">❯ cat README.md</div>
           <div className="space-y-2 text-xs leading-5">
             <p className="text-[#c8ffd4]">
-              Full stack developer who came up through the terminal. I build tools that make developers' lives easier —
+              Full stack developer who came up through the terminal. I build tools that make developers&apos; lives easier —
               CLIs, shell environments, mobile apps, and web platforms.
             </p>
             <p className="text-[#c8ffd4]">
               I care about the craft: clean APIs, fast feedback loops, and code that actually ships.
-              When I'm not building, I'm automating something that probably didn't need automating.
+              When I&apos;m not building, I&apos;m automating something that probably didn&apos;t need automating.
             </p>
             <p className="text-[#4a7a55]">
               Based in the US · Remote-first · Open to full-time roles

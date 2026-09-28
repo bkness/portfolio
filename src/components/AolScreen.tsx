@@ -85,8 +85,8 @@ function playModem() {
     // Connected carrier hum
     tone(2400, 1200, 7.1, 1.2, 0.05);
 
-    setTimeout(() => { try { ctx.close(); } catch (_) {} }, 9000);
-  } catch (_) { /* audio not available */ }
+    setTimeout(() => { try { ctx.close(); } catch { /* already closed */ } }, 9000);
+  } catch { /* audio not available */ }
 }
 
 // Win95 style helpers
@@ -230,7 +230,7 @@ export default function AolScreen() {
           <div style={{ background: '#ffff99', border: '2px solid #cccc00', padding: '10px 16px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, fontSize: 14 }}>
             <span style={{ fontSize: 28 }}>📬</span>
             <div>
-              <div style={{ fontWeight: 'bold', color: '#000080', fontSize: 16 }}>You've Got Mail!</div>
+              <div style={{ fontWeight: 'bold', color: '#000080', fontSize: 16 }}>You&apos;ve Got Mail!</div>
               <div style={{ color: '#444', fontSize: 11 }}>3 unread messages · Inbox</div>
             </div>
           </div>
@@ -302,7 +302,7 @@ export default function AolScreen() {
                 Cottonwood, AZ!
               </div>
               <div style={{ fontSize: 9, color: '#888' }}>
-                (just hire the developer. that's the joke.)
+                (just hire the developer. that&apos;s the joke.)
               </div>
               <div className="flex gap-2 justify-center pt-2">
                 <button

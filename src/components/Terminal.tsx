@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback, KeyboardEvent } from 'react';
+import { TERMINAL_PROJECTS } from '@/data/projects';
 
 type OutputLine = {
   type: 'input' | 'output' | 'error' | 'system';
@@ -59,10 +60,16 @@ const COMMANDS: Record<string, () => string[]> = {
     "       Full stack game tracker with conditional auth",
     "",
     "  [3] nightowlz           React Native · MongoDB · JWT",
-    "       iOS nightlife discovery app",
+    "       Nightlife discovery app for iOS and the web",
     "",
-    "  [4] breweries           Node · SQLite · Sequelize",
-    "       Brewery finder — migrated from MySQL/Heroku",
+    "  [4] breweries           Node · Postgres · Sequelize",
+    "       Brewery finder — rebuilt from a group project",
+    "",
+    "  [5] kanban              React · Postgres · Playwright",
+    "       Drag-and-drop board with accounts + cloud sync",
+    "",
+    "  [6] devlogger           Next.js · Prisma · Postgres",
+    "       Developer log with auth, tags, and themes",
     "",
     "  open <number>  to spin up a project",
     "  run  npm fund  to support the developer",
@@ -84,7 +91,7 @@ const COMMANDS: Record<string, () => string[]> = {
     "  whoami               Who is this guy?",
     "  skills --list        Full tech stack",
     "  projects --featured  Featured work",
-    "  open <1-4>           Spin up a project",
+    "  open <1-6>           Spin up a project",
     "  contact --hire       Get in touch",
     "  clear                Clear terminal",
     "  doom scroll          ...",
@@ -212,6 +219,8 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
     2: 'game-hub',
     3: 'nightowlz',
     4: 'breweries',
+    5: 'kanban',
+    6: 'devlogger',
   };
 
   const handleCommand = (cmd: string) => {
@@ -257,7 +266,7 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
       if (!name) {
         setOutput(prev => [
           ...prev,
-          { type: 'error',  content: `open: no project [${n}] — valid range: 1-4` },
+          { type: 'error',  content: `open: no project [${n}] — valid range: 1-${Object.keys(PROJECT_NAMES).length}` },
           { type: 'system', content: 'run  projects --featured  to see the list.' },
           { type: 'system', content: '' },
         ]);
@@ -272,7 +281,7 @@ export default function Terminal({ onOpenProject }: { onOpenProject?: (id: numbe
       setTimeout(() => {
         setOutput(prev => [
           ...prev,
-          { type: 'output', content: `  ▶  Local:   http://localhost:3000` },
+          { type: 'output', content: `  ▶  Local:   http://localhost:${TERMINAL_PROJECTS.find(p => p.id === n)?.localPort ?? '3000'}` },
         ]);
       }, 800);
       setTimeout(() => {

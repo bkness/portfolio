@@ -258,7 +258,7 @@ export default function DoomScroll() {
 
           {/* End of feed */}
           <div className="text-center py-6 text-[10px] text-[#333] font-mono">
-            you've reached the end<br />
+            you&apos;ve reached the end<br />
             <span className="text-[#1a1a1a]">there is no end</span>
           </div>
         </div>

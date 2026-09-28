@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+// Order = what a visitor sees first: desktop shows 4 cards before
+// "show more", phones 3. Strongest, most current work leads.
 const PROJECTS = [
   {
     number: '01',
@@ -15,48 +17,57 @@ const PROJECTS = [
   },
   {
     number: '02',
-    name: 'game-hub',
-    description: 'Full stack game tracker with GraphQL API, JWT auth, and full CRUD. Conditional rendering based on auth state throughout.',
-    tags: ['GraphQL', 'React', 'Node.js', 'MongoDB', 'JWT'],
-    github: 'https://github.com/bkness/game-hub',
-    demo: null,
-    demoLabel: null,
+    name: 'kanban',
+    description: 'Drag-and-drop Kanban board with optional accounts and cloud sync — boards save to Postgres with version checks, so two devices never silently overwrite each other. Search, label filters, keyboard shortcuts, and collapsible lanes; 36 Playwright tests in CI.',
+    tags: ['React', 'TypeScript', 'Zustand', 'Postgres', 'Playwright'],
+    github: 'https://github.com/bkness/kanban',
+    demo: 'https://kanban-bkness.vercel.app',
+    demoLabel: 'live',
   },
   {
     number: '03',
     name: 'nightowlz',
-    description: 'iOS nightlife discovery app built with React Native and Expo. JWT auth, MongoDB backend, real-time venue data.',
-    tags: ['React Native', 'Expo', 'MongoDB', 'JWT', 'iOS'],
+    description: 'Nightlife discovery app built with React Native and Expo — one codebase for iOS and the web. Swipe to save bars, Apple Maps search, JWT auth, MongoDB backend, and an owner dashboard for events.',
+    tags: ['React Native', 'Expo', 'MongoDB', 'MapKit', 'iOS + Web'],
     github: 'https://github.com/bkness/nightowlz',
-    demo: null,
-    demoLabel: null,
+    demo: 'https://nightowlz.vercel.app',
+    demoLabel: 'live',
   },
   {
     number: '04',
-    name: 'breweries',
-    description: 'Brewery finder rebuilt from the ground up — migrated from MySQL/Heroku to SQLite/Render. Covers the full migration story from legacy stack to modern deploy.',
-    tags: ['Node.js', 'SQLite', 'Sequelize', 'MySQL', 'Render'],
-    github: 'https://github.com/bkness/breweries',
-    demo: 'https://breweries.onrender.com',
+    name: 'devlogger',
+    description: 'Developer log for notes, progress, and breakthroughs — per-user auth with rate limiting, a tag system with click-to-filter, weekly stats, and a layered theme engine.',
+    tags: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL', 'NextAuth'],
+    github: 'https://github.com/bkness/devlogger',
+    demo: 'https://devlogger-bkness.vercel.app',
     demoLabel: 'live',
   },
   {
     number: '05',
-    name: 'devlog',
-    description: 'Full CRUD developer journal with session-based auth, MySQL persistence, and Handlebars templating.',
-    tags: ['Node.js', 'MySQL', 'Express', 'Handlebars', 'Auth'],
-    github: 'https://github.com/bkness/devlog',
-    demo: null,
-    demoLabel: null,
-  },
-  {
-    number: '06',
     name: 'dotfiles',
     description: 'Terminal-first dev environment — custom zsh shell with hooks, plugin registry, GitHub workflow automation, and forged-cli integration.',
     tags: ['zsh', 'Shell', 'Automation', 'CLI', 'DevOps'],
     github: 'https://github.com/bkness/dotfiles',
     demo: null,
     demoLabel: null,
+  },
+  {
+    number: '06',
+    name: 'breweries',
+    description: 'Brewery finder rebuilt from a bootcamp group project — Express and Handlebars on Postgres (Supabase), with user accounts, saved favorites, and search across the Open Brewery DB.',
+    tags: ['Node.js', 'Express', 'PostgreSQL', 'Sequelize', 'Handlebars'],
+    github: 'https://github.com/bkness/breweries',
+    demo: 'https://breweries-bkness.vercel.app',
+    demoLabel: 'live',
+  },
+  {
+    number: '07',
+    name: 'game-hub',
+    description: 'Full stack game tracker with GraphQL API, JWT auth, and full CRUD. Conditional rendering based on auth state throughout.',
+    tags: ['GraphQL', 'React', 'Node.js', 'MongoDB', 'JWT'],
+    github: 'https://github.com/bkness/game-hub',
+    demo: 'https://game-hub-bkness.vercel.app',
+    demoLabel: 'live',
   },
 ];
 
